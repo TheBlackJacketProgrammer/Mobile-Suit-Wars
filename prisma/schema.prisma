@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model event_logs {
+  log_id    Int    @id @default(autoincrement())
+  log_date  String @unique(map: "log_date_UNIQUE") @db.VarChar(45)
+  log_event String @db.VarChar(1000)
+}
+
+model mobile_suits {
+  ms_id                 Int                     @id @default(autoincrement())
+  ms_mid                String                  @unique(map: "ms_mid_UNIQUE") @db.VarChar(100)
+  ms_name               String                  @db.VarChar(45)
+  ms_pic                String                  @db.VarChar(100)
+  ms_cost               String                  @db.VarChar(100)
+  ms_armor              Int
+  ms_level              Int
+  ms_exp                Int
+  ms_atk1               String                  @db.VarChar(45)
+  ms_atk2               String                  @db.VarChar(45)
+  ms_atk3               String                  @db.VarChar(45)
+  ms_atk1dmg            Int
+  ms_atk2dmg            Int
+  ms_atk3dmg            Int
+  ms_atk1Eff            String?                 @db.VarChar(45)
+  ms_atk2Eff            String?                 @db.VarChar(45)
+  ms_atk3Eff            String?                 @db.VarChar(45)
+  user_has_mobile_suits user_has_mobile_suits[]
+}
+
+model user {
+  u_id                  Int                     @id @default(autoincrement())
+  u_name                String                  @db.VarChar(45)
+  u_account             String                  @unique(map: "u_account_UNIQUE") @db.VarChar(45)
+  u_password            String                  @db.VarChar(45)
+  u_email               String                  @unique(map: "u_email_UNIQUE") @db.VarChar(45)
+  u_points              Int
+  u_type                String                  @db.VarChar(45)
+  u_status              String                  @db.VarChar(45)
+  user_has_mobile_suits user_has_mobile_suits[]
+}
+
+model user_has_mobile_suits {
+  u_id         Int
+  ms_id        Int
+  ums_armor    Int
+  ums_level    Int
+  ums_exp      Int
+  ums_atk1dmg  Int
+  ums_atk2dmg  Int
+  ums_atk3dmg  Int
+  ums_onLineup String       @db.VarChar(45)
+  mobile_suits mobile_suits @relation(fields: [ms_id], references: [ms_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_mobile_suits1")
+  user         user         @relation(fields: [u_id], references: [u_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_user")
+
+  @@id([u_id, ms_id])
+  @@index([ms_id], map: "fk_user_has_mobile_suits_mobile_suits1_idx")
+  @@index([u_id], map: "fk_user_has_mobile_suits_user_idx")
+}

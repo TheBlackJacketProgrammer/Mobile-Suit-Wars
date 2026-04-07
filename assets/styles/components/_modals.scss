@@ -1,0 +1,116 @@
+body.modal-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+div.modal{
+    width: 100%;
+    position: fixed;
+    inset: 0px;
+    z-index: 999;
+    background-color: rgba($black, 0.9);
+    padding-top: 3%;
+
+    @media (width <= $md) {
+        padding-top: 0;
+    }
+    
+    .modal-dialog-box{
+        width: 100%;
+        max-width: $xl;
+        border-radius: $border-radius-md;
+        overflow: hidden;
+        background-color: $white;
+        
+        box-shadow: 0 0 10px 0 rgba($black, 0.5);
+
+        @media (width <= $md) {
+            max-width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            border-radius: 0;
+        }
+
+        .modal-header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: $blue-4;
+
+            h4{
+                @include h5;
+                font-weight: 700;
+            }
+
+            .btn-close{
+                padding: 8px 16px;
+                border-radius: $border-radius-md;
+                &:hover{
+                    background-color: $shade-3;
+                }
+            }
+        }
+
+        .modal-body{
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+            height: 100%;
+            max-height: 100%;
+            overflow-y: auto;
+            padding: 12px;
+
+            .input-wrapper {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                
+                &.error {
+                    input {
+                        border-color: $color-error;
+                    }
+                }
+                
+                .input-icon {
+                    position: absolute;
+                    left: 15px;
+                    top: 15px;
+                    z-index: 2;
+                    pointer-events: none;
+                }
+                
+                input {
+                    width: 100%;
+                    padding: 15px 15px 15px 50px;
+                    background-color: $black;
+                    border: 1px solid $border-color;
+                    border-radius: $border-radius-md;
+                    color: $white;
+                    transition: border-color 0.3s ease;
+                
+                    &::placeholder {
+                        color: $white;
+                        opacity: 0.8;
+                    }
+                
+                    &:focus {
+                        outline: none;
+                        border-color: #555;
+                    }
+                
+                    &:hover {
+                        border-color: #444;
+                    }
+                }
+    
+            }
+        }
+    }
+}

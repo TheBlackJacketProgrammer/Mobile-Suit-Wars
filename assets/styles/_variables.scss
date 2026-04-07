@@ -1,0 +1,168 @@
+// Typography
+$font-poppins: 'Poppins', sans-serif;
+$font-rubik: 'Rubik', sans-serif;
+$font-avenir: 'Avenir Next Cyr', sans-serif;
+
+$font-family: #{$font-avenir} !important; // Select which default font to use
+
+// Breakpoints
+$sm: 480px;             // smaller mobile (i.e. <= 480px)
+$md: 768px;             // mobile (i.e. <= 768px)
+$lg: 1024px;            // tablets (i.e. <= 1024px)
+$xl: 1280px;            // small laptops/desktops  (i.e. >= 1280px)
+$xxl: 1400px;           // large desktops (i.e. >= 1400px)
+$xxxl: 1536px;          // large desktops (i.e. >= 1536px)
+$xxxxl: 1920px;         // larger desktops (i.e. >= 1920px)
+$xxxxxl: 2560px;        // huge desktops (i.e. >= 2560px)
+
+// Layouts
+$max-width-container: 1200px;
+$max-width-inner-page: 996px;
+
+// Container widths
+$max-width-container-xl: 1280px;
+$max-width-container-lg: 1024px;
+$max-width-container-md: 768px;
+$max-width-container-sm: 480px;
+
+// Padding
+$side-padding-m: 20px;
+$side-padding: 28px;
+
+$section-tb-m: 2rem;
+$section-tb: 2.5rem;
+
+
+// Header heights
+$header-height-m: 78px;
+$header-height: 86px;
+
+
+// Black/White Colours
+$black: #000000;
+$white: #ffffff;
+
+
+
+// Text Colours
+$text-0-dark: #040710;
+$text-1-dark: #111111;
+$text-3-dark: #333333;
+$text-3-mid: #3F3F3F;
+$text-4-mid: #444444;
+$text-5-mid: #555555;
+$text-7-mid: #757575;
+$text-e-light: #eeeeee;
+$text-f-light: #f9f9f9;
+
+// Text Colours - Black to Gray Gradient
+$text-0: #000000;    // Pure black
+$text-1: #1a1a1a;    // Very dark gray
+$text-2: #333333;    // Dark gray
+$text-3: #4a4a4a;    // Medium dark gray
+$text-4: #666666;    // Medium gray
+$text-5: #808080;    // Gray
+$text-6: #999999;    // Light gray
+$text-7: #b3b3b3;    // Lighter gray
+$text-8: #cccccc;    // Very light gray
+$text-9: #e0e0e0;    // Pale gray
+$text-10: #f0f0f0;   // Very pale gray
+$text-11: #f5f5f5;   // Almost white gray
+$text-12: #fafafa;   // Lightest gray tint
+
+// Blue Gradient Colours
+$blue-0: #F0F0FF;
+$blue-1: #E6E6FF;
+$blue-2: #CCCCFF;
+$blue-3: #9999FF;
+$blue-4: #6666FF;
+$blue-5: #3333FF;
+$blue-6: #21007F; // Primary Blue
+$blue-7: #1A0066;
+$blue-8: #14004D;
+$blue-9: #0D0033;
+$blue: $blue-6;
+
+// Main Gradient Colours
+$primary-0: #fefbfb;
+$primary-1: #fcf6f6;
+$primary-2: #edf3f8;
+$primary-3: #f0dada;
+$primary-4: rgb(218, 163, 163);
+$primary-5: #B30101;
+$primary-6: #B30101; // Primary
+$primary-7: #B30101;
+$primary-8: #690000;
+$primary-9: #B30101;
+$primary: $primary-6;
+
+
+
+// Default border colour
+$border-color: #dddddd;
+$border-color-blue: #3359a5;
+
+
+
+// Round borders sizes
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+$border-radius-2xl: 24px;
+
+
+// Button radius
+$btn-radius: 80px;
+
+// Basic Light Gray 
+$basic-light-gray: #F3F4F6;
+
+
+// Stilleto Red
+$stilleto-red: #8F0101;
+
+// Secondary Black
+$secondary-black-50: #E6E8E8;
+$secondary-black-100: #B4B9BB;
+$secondary-black-200: #9BA1A4;
+$secondary-black-400: #384349;
+$secondary-black-500: #06141B;
+
+
+// Shade Colours - Light to Dark Gradient
+$shade-0: #FBFBFB;    // Lightest shade
+$shade-1: #F5F5F5;    // Very light shade
+$shade-2: #EEEEEE;    // Light shade
+$shade-3: #BBBBBB;    // Medium light shade
+$shade-4: #CCCCCC;    // Medium shade
+$shade-5: #888888;    // Medium dark shade
+$shade-6: #757575;    // Dark shade
+$shade-7: #666666;    // Darker shade
+$shade-8: #4A4A4A;    // Darkest shade
+$shade-9: #000000;    // Pure black
+
+// Status Colors
+$color-success: #008000;
+$color-success-hover: #006600;
+$color-success-active: #004400;
+$color-success-focus: #00AA00;
+$color-success-disabled: #80C080;
+
+$color-error: #FF0000;
+$color-error-hover: #CC0000;
+$color-error-active: #990000;
+$color-error-focus: #FF3333;
+$color-error-disabled: #FF8080;
+
+$color-warning: #FFA500;
+$color-warning-hover: #CC8400;
+$color-warning-active: #996300;
+$color-warning-focus: #FFB733;
+$color-warning-disabled: #FFD280;
+
+$color-info: #0000FF;
+$color-info-hover: #0000CC;
+$color-info-active: #000099;
+$color-info-focus: #3333FF;
+$color-info-disabled: #8080FF;

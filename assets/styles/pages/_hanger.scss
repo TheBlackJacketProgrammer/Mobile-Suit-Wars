@@ -1,0 +1,101 @@
+.hanger-section {
+
+    .p-base {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+
+.hanger-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    .hanger-item {
+        width: 100%;
+        max-width: $max-width-inner-page;
+        background-color: #dfebf4;
+        display: flex;
+        flex-direction: row;
+        gap: 24px;
+        align-items: center;
+        justify-content: start;
+        padding: 16px;
+        border-radius: $border-radius-md;
+        border: 5px solid $border-color-blue;
+
+        .hanger-item-image-container {
+            width: 100%;
+            max-width: 200px;
+            min-height: auto;
+            border-radius: $border-radius-md;
+            border: 1px solid $border-color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+
+            background: linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.5) 0%,
+                rgba(0, 0, 0, 0.5) 100%
+                ),
+                url("/images/bg-hanger-ms.jpg") lightgray 50% / 100% 100% no-repeat;
+        }
+
+        .hanger-item-image {
+            width: 100%;
+            max-width: 100px;
+            min-height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .hanger-item-information {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: start;
+            justify-content: start;
+
+            .hanger-item-information-title {
+                @include h5;
+                font-weight: 700;
+                color: $text-3-dark;
+                margin-bottom: 4px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                border-bottom: 2px solid $border-color-blue;
+                padding-bottom: 4px;
+                width: 100%;
+                display: block;
+            }
+
+            .hanger-item-information-subtitle {
+                @include h6;
+                font-weight: 700;
+                font-size: 16px;
+                color: $text-3-dark;
+                margin-bottom: 4px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                border-bottom: 2px solid $border-color-blue;
+                padding-bottom: 4px;
+                width: 100%;
+                display: block;
+            }
+        }
+    }
+}
+

@@ -1,0 +1,245 @@
+// Typography
+@mixin h1 {
+    font-size: clamp(32px, 5vw, 40px);
+  }
+  @mixin h2 {
+    font-size: clamp(28px, 4vw, 32px);
+  }
+  @mixin h3 {
+    font-size: 30px;
+  }
+  @mixin h4 {
+    font-size: 24px;
+  }
+  @mixin h5 {
+    font-size: 18px;
+  }
+  @mixin h6 {
+    font-size: 18px;
+  }
+  @mixin p {
+    font-size: 16px;
+    font-family: $font-family;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 1em;
+    color: $text-5-mid;
+  }
+  @mixin a {
+    font-family: $font-family;
+    color: $primary;
+    &:hover,
+    &:focus,
+    &:active {
+      color: $primary;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+  @mixin ul {
+    font-family: $font-family;
+    color: $text-5-mid;
+  }
+  
+  @mixin typography {
+    body {
+      // Typography Resets
+      font-family: $font-family;
+      --e-global-typography-text-font-family: #{$font-family};
+      
+      // Website Typography
+      h1,h2,h3,h4,h5,h6 {
+        font-family: $font-family;
+        font-weight: 750;
+        line-height: 1.2;
+        margin-top: 0;
+        margin-bottom: 0.6em;
+        color: $text-3-dark;
+      }
+      h1 {
+        @include h1;
+      }
+      h2 {
+        @include h2;
+      }
+      h3 {
+        @include h3;
+      }
+      h4 {
+        @include h4;
+        font-weight: 700;
+      }
+      h5 {
+        @include h5;
+      }
+      h6 {
+        @include h6;
+      }
+      p {
+        @include p;
+      }
+      a {
+        @include a;
+      }
+      ul {
+        @include ul;
+      }
+    }
+  }
+  
+  //
+  // CTA / Buttons
+  //
+  @mixin btn-standard {
+    $height: 48px;
+    height: $height;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: $font-family;
+    font-size: 16px;
+    font-weight: 700;
+    transition: none;
+    outline: 0;
+    border: 2px solid $primary;
+    // border-radius: $btn-radius !important;
+    border-radius: $border-radius-md;
+    box-shadow: none;
+    background-color: $primary;
+    color: $white;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: none;
+    text-align: center;
+    line-height: 1;
+    padding: 12px 18px;
+    min-width: 150px;
+    @media (max-width: $md) {
+      min-width: 140px;
+    }
+  
+    &:hover,
+    &:focus,
+    &:active {
+      box-shadow: none;
+      outline: 0;
+      color: $white;
+      text-decoration: none;
+    }
+  
+    &:hover {
+      background: $primary-5;
+      border: 2px solid $primary-5;
+    }
+    &:active {
+      background: $primary-7 !important;
+      border: 2px solid $primary-7 !important;
+    }
+    &:focus-visible {
+      background: $primary;
+      border: 2px solid $primary;
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+  @mixin btn-primary {
+    @include btn-standard;
+    background: $primary;
+    color: $white;
+    border: 2px solid $primary;
+    // $primary / $primary-5 / $primary-7 are the same hex — standard hover/active had no visible change
+    transition: filter 0.12s ease, transform 0.12s ease;
+
+    &:hover {
+      filter: brightness(1.12);
+    }
+    &:active {
+      filter: brightness(0.88);
+      transform: translateY(1px);
+    }
+  }
+  @mixin btn-secondary {
+    @include btn-standard;
+    background: $white;
+    color: $primary;
+    border: 2px solid $primary;
+  
+    &:hover,
+    &:focus,
+    &:active {
+      color: $primary;
+    }
+  
+    &:hover {
+      background: $primary-1;
+    }
+    &:active {
+      background: $primary-3 !important;
+    }
+    &:focus-visible {
+      background: $primary-1;
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+  @mixin btn-secondary-transparent {
+    @include btn-secondary;
+    background: transparent;
+    color: $white;
+    border: 2px solid $white;
+  
+    &:hover,
+    &:focus,
+    &:active {
+      color: $white;
+      border: 2px solid $white !important;
+    }
+  
+    &:hover {
+      background: rgba($white, 0.11);
+    }
+    &:active {
+      background: rgba($white, 0.20) !important;
+    }
+    &:focus-visible {
+      background: rgba($white, 0.11);
+      outline: 2px solid $white;
+      outline-offset: 2px;
+    }
+  }
+  @mixin btn-tertiary {
+    @include btn-secondary;
+    background: $white;
+    color: $primary;
+    border: 2px solid $primary;
+    border-radius: $border-radius-sm !important;
+    min-width: 158px;
+  
+    &:hover,
+    &:focus,
+    &:active {
+      color: $primary;
+    }
+  
+    &:hover {
+      background: $primary-1;
+    }
+    &:active {
+      background: $primary-3 !important;
+    }
+    &:focus-visible {
+      background: $primary-1;
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+
+  @mixin btn-blog-category {
+    @include btn-secondary;
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: $border-radius-sm;
+  }

@@ -1,0 +1,86 @@
+@keyframes header-stretch-in {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+#main-navbar {
+    transform-origin: left center;
+    animation: header-stretch-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #main-navbar {
+        animation: none;
+        transform: none;
+    }
+}
+
+header {
+    z-index: 100;
+    position: fixed;
+    width: 100%;
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.5) 0%,
+        rgba(68, 77, 105, 0.5) 100%
+      ), url("/images/bg-header.jpg") lightgray 50% / 100% 100% no-repeat;
+    transition: background 0.2s ease;
+    min-height: $header-height-m !important;
+
+    .site-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+
+        .site-logo {
+            display: flex;
+            width: 100%;
+            max-width: 200px;
+            justify-content: center;
+            align-items: center;
+            
+            a {
+                display: flex;
+                width: 100%;
+                max-width: 200px;
+                img {
+                    width: 100%;
+                    height: auto;
+                    object-fit: contain;
+                }
+            }
+        }
+
+        .site-nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            a, button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px;
+                background: transparent;
+                transition: all 0.3s ease;
+                min-width: 115px;
+                font-weight: 400;
+
+                &:hover {
+                    color: $black;
+                    font-weight: 700;
+                    background: url("/images/btn-hover.png");
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+    }
+}
