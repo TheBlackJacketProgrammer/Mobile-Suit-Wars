@@ -1,9 +1,12 @@
 import type { MSLineUpUnit } from "@/lib/getMSLineUp";
+import { getActionLabel, getDamageForAction } from "../battleDamage";
 import type { MSActionHover } from "../types";
 
 type Props = {
   lineup: MSLineUpUnit;
   hoveredAction: MSActionHover | null;
+  /** Current armor in battle (same value as the unit’s HP bar). */
+  currentArmor: number;
 };
 
 function resolveAction(
@@ -11,28 +14,26 @@ function resolveAction(
   hovered: MSActionHover | null,
 ): { label: string; damage: number } | null {
   if (!hovered) return null;
-  switch (hovered) {
-    case "basic":
-      return { label: "Basic Attack", damage: lineup.basicAtkdmg };
-    case "skill1":
-      return { label: lineup.skill1, damage: lineup.skill1dmg };
-    case "skill2":
-      return { label: lineup.skill2, damage: lineup.skill2dmg };
-    case "skill3":
-      return { label: lineup.skill3, damage: lineup.skill3dmg };
-    default:
-      return null;
-  }
+  return {
+    label: getActionLabel(lineup, hovered),
+    damage: getDamageForAction(lineup, hovered),
+  };
 }
 
-export default function MSStats({ lineup, hoveredAction }: Props) {
+export default function MSStats({
+  lineup,
+  hoveredAction,
+  currentArmor,
+}: Props) {
   const preview = resolveAction(lineup, hoveredAction);
 
   return (
     <div className="flex flex-col gap-2">
       {/* Top Info */}
       <div className="flex flex-col gap-1 text-green-700 font-semibold">
-        <span>Armor: {lineup.armor}</span>
+        <span>
+          Armor: {currentArmor} / {lineup.armor}
+        </span>
         <span>Lvl: {lineup.level}</span>
       </div>
 

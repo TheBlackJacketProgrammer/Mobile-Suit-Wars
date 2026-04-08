@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { getMSLineUp } from "@/lib/getMSLineUp";
 import BattleArenaClient from "./BattleArenaClient";
+import { getRandomEnemyMS } from "../actions/getRandomEnemyMS";
 
 export default async function BattleArena() {
   const session = await getServerSession(authOptions);
@@ -11,5 +12,7 @@ export default async function BattleArena() {
       ? await getMSLineUp(Number(userId))
       : [];
 
-  return <BattleArenaClient lineup={lineup} />;
+  const enemyMS = await getRandomEnemyMS();
+
+  return <BattleArenaClient lineup={lineup} enemyMS={enemyMS} />;
 }
