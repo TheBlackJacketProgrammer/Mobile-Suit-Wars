@@ -64,8 +64,14 @@ export function resolveAttackOutcome(
   let finalDamage = baseDamage;
   let critical = false;
   if (Math.random() < critChanceForAttacker(attackerCost)) {
-    critical = true;
-    finalDamage = Math.max(1, Math.floor(baseDamage * CRIT_DAMAGE_MULTIPLIER));
+    const critDamage = Math.max(
+      1,
+      Math.floor(baseDamage * CRIT_DAMAGE_MULTIPLIER),
+    );
+    if (critDamage > baseDamage) {
+      critical = true;
+      finalDamage = critDamage;
+    }
   }
 
   return { finalDamage, evaded: false, critical };

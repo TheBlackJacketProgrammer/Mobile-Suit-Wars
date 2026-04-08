@@ -38,7 +38,7 @@ export default async function Hanger() {
                 </div>
                 <div>
                   <p className="text-3-dark mb-1 font-bold p-base">Exp</p>
-                  <p className="text-5-mid m-0 p-base">{item.exp}</p>
+                  <p className="text-5-mid m-0 p-base">{item.umsExp}</p>
                 </div>
                 <div>
                   <p className="text-3-dark mb-1 font-bold p-base">Armor</p>

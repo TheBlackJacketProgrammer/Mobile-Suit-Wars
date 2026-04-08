@@ -18,6 +18,7 @@ main {
 
             .arena-container {
                 width: 100%;
+                min-height: 500px;
                 background-color: $white;
                 border-radius: $border-radius-sm;
                 border: 1px solid $border-color;
@@ -34,8 +35,8 @@ main {
 
                     .image-container {
                         width: 100%;
-                        max-width: 75px;
-                        min-height: 100px;
+                        max-width: 100px;
+                        max-height: 100px;
                         // border-radius: $border-radius-md;
                         // border: 1px solid $border-color;
                         display: flex;
@@ -47,7 +48,7 @@ main {
                         img {
                             width: 100%;
                             height: 100%;
-                            object-fit: cover;
+                            object-fit: contain;
                             transform: rotate3d(0, 1, 0, 180deg);
                         }
 
@@ -74,7 +75,6 @@ main {
                         cursor: not-allowed;
                         // box-shadow: inset 0 0 0 2px rgba(217, 119, 6, 0.5);
                         // border-radius: $border-radius-sm;
-                        background-color: $basic-light-gray;
 
                         /* Grayscale portrait only — HP bar lives outside this box. */
                         img {
@@ -118,8 +118,8 @@ main {
 
                     .image-container {
                         width: 100%;
-                        max-width: 75px;
-                        min-height: 100px;
+                        max-width: 100px;
+                        max-height: 100px;
                         // border-radius: $border-radius-md;
                         // border: 1px solid $border-color;
                         display: flex;
@@ -130,7 +130,7 @@ main {
                         img {
                             width: 100%;
                             height: 100%;
-                            object-fit: cover;
+                            object-fit: contain;
                         }
 
                         .exploded-overlay {
@@ -253,9 +253,13 @@ main {
                             display: flex;
                             flex-direction: column;
                             align-items: start;
-                            justify-content: start;
+                            justify-content: flex-start;
                             gap: 8px;
                             padding: 8px;
+                            /* Same height idle vs hover (4 stat rows + gaps + padding). */
+                            height: 9.25rem;
+                            box-sizing: border-box;
+                            width: 100%;
                             background-color: $basic-light-gray;
                             border-radius: $border-radius-sm;
                             border: 1px solid $border-color;
@@ -299,7 +303,7 @@ main {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    justify-content: center;
+                    justify-content: flex-start;
                     gap: 8px;
                     padding: 8px;
 
@@ -315,7 +319,7 @@ main {
                     .action-logs-scroll {
                         width: 100%;
                         min-height: 120px;
-                        max-height: 10rem;
+                        max-height: 300px;
                         overflow-y: auto;
                         border: 1px solid $border-color;
                         border-radius: $border-radius-sm;
@@ -328,6 +332,159 @@ main {
             }
         }
     }
+}
+
+/* Victory lineup summary (fixed overlay — outside arena container width). */
+.battle-win-summary-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+}
+
+.battle-win-summary-panel {
+    width: 100%;
+    max-width: 520px;
+    max-height: min(90vh, 720px);
+    overflow-y: auto;
+    padding: 20px 24px 24px;
+    border-radius: $border-radius-sm;
+    border: 2px solid $border-color;
+    background: linear-gradient(180deg, #1e2936 0%, #121820 100%);
+    box-shadow:
+        0 0 0 1px rgba(96, 165, 250, 0.25),
+        0 12px 40px rgba(0, 0, 0, 0.45);
+    color: $white;
+}
+
+.battle-win-summary-title {
+    margin: 0 0 16px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.battle-win-summary-points {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    border-radius: $border-radius-sm;
+    background-color: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.battle-win-summary-label {
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.battle-win-summary-calc {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: #7dd3fc;
+}
+
+.battle-win-summary-units {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.battle-win-summary-unit {
+    position: relative;
+    padding: 12px 12px 12px 16px;
+    border-radius: $border-radius-sm;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.battle-win-summary-slot {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+.battle-win-summary-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px 12px;
+    align-items: baseline;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.battle-win-summary-row--exp {
+    align-items: start;
+}
+
+.battle-win-summary-k {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.battle-win-summary-v {
+    color: #f1f5f9;
+    word-break: break-word;
+}
+
+.battle-win-summary-exp-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.battle-win-summary-exp-continue {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+}
+
+.battle-win-summary-exp-hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.35;
+}
+
+.battle-win-summary-level-bonuses {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #a5b4fc;
+    line-height: 1.4;
+}
+
+.battle-win-summary-destroyed {
+    margin-top: 8px !important;
+    font-size: 0.8rem;
+    color: #f87171;
+}
+
+.battle-win-summary-ok {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-weight: 700;
 }
 
 @keyframes battle-arena-enemy-shake {

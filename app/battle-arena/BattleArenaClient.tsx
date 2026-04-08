@@ -16,6 +16,11 @@ import {
 import { runEnemyCounterAttack } from "./enemyTurn";
 import type { MSActionHover, TabType } from "./types";
 import type { mobile_suits } from "../generated/prisma/client";
+import type { ApplyBattleWinSuccess } from "../actions/applyBattleWinRewards";
+import { toast } from "react-toastify";
+import { applyBattleWinRewards } from "../actions/applyBattleWinRewards";
+import { fetchMSLineupForBattle } from "../actions/fetchMSLineupForBattle";
+import BattleWinSummaryModal from "./components/BattleWinSummaryModal";
 import { refreshBattleEnemies } from "../actions/refreshBattleEnemies";
 import type { BattleLogEntry, BattleLogPart } from "./battleLog";
 import { buildAttackLogLine, resolveAttackOutcome } from "./battleCritEvade";
@@ -24,6 +29,7 @@ import { useBattleArenaBgmControlsRef } from "./battleArenaBgmContext";
 type Props = {
   lineup: MSLineUpUnit[];
   enemyMS: mobile_suits[];
+  userId: number | null;
 };
 
 type PendingPlayerAttack = {
@@ -131,8 +137,14 @@ function ActionLogLine({ entry }: { entry: BattleLogEntry }) {
   );
 }
 
-export default function BattleArenaClient({ lineup, enemyMS }: Props) {
+export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const bgmControlsRef = useBattleArenaBgmControlsRef();
+  const [liveLineup, setLiveLineup] = useState<MSLineUpUnit[]>(lineup);
+
+  useEffect(() => {
+    setLiveLineup(lineup);
+  }, [lineup]);
+
   const [liveEnemyMS, setLiveEnemyMS] = useState<mobile_suits[]>(enemyMS);
   /** Shown until the player picks an attack/skill; reset on a new battle. */
   const [showBattleStartHeading, setShowBattleStartHeading] = useState(true);
@@ -172,6 +184,7 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
     number | null
   >(null);
   const [isEnemyTurnPending, setIsEnemyTurnPending] = useState(false);
+  const [turnCount, setTurnCount] = useState(1);
   /** Rolling last two attackers; both rest next turn when all three units are alive. */
   const [lastTwoActors, setLastTwoActors] = useState<LastTwoActors>([
     null,
@@ -207,6 +220,9 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
   const loseAudioRef = useRef<HTMLAudioElement | null>(null);
   const outcomeStingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const actionLogsScrollRef = useRef<HTMLDivElement | null>(null);
+  const winRewardsAppliedRef = useRef(false);
+  const [winSummaryData, setWinSummaryData] =
+    useState<ApplyBattleWinSuccess | null>(null);
 
   function clearOutcomeStinger() {
     if (outcomeStingerRef.current != null) {
@@ -279,6 +295,34 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
   useEffect(() => {
     return () => clearOutcomeStinger();
   }, []);
+
+  useEffect(() => {
+    if (battleOutcome !== "win" || userId == null) return;
+    if (winRewardsAppliedRef.current) return;
+
+    const survivingMsIds = playerHP.flatMap((hp, i) => {
+      if (hp <= 0) return [];
+      const u = liveLineup[i];
+      return u != null ? [u.msId] : [];
+    });
+
+    winRewardsAppliedRef.current = true;
+    void applyBattleWinRewards({
+      finalTurnCount: turnCount,
+      survivingMsIds,
+    }).then((res) => {
+      if (res.ok) {
+        setWinSummaryData(res);
+        setLogLines((prev) => [
+          ...prev,
+          `Victory rewards applied — G-points ${res.gPointsBefore} + ${res.gPointsRewarded} = ${res.gPointsAfter}.`,
+        ]);
+      } else {
+        toast.error(res.error);
+        winRewardsAppliedRef.current = false;
+      }
+    });
+  }, [battleOutcome, userId, turnCount, playerHP, liveLineup]);
 
   useEffect(() => {
     const prev = prevPlayerHPRef.current;
@@ -451,11 +495,19 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
     setEndBattleBusy(true);
     try {
       const nextEnemies = await refreshBattleEnemies();
+      let nextLineup = liveLineup;
+      try {
+        const fetched = await fetchMSLineupForBattle();
+        if (fetched.length > 0) nextLineup = fetched;
+      } catch {
+        /* keep previous liveLineup */
+      }
+      setLiveLineup(nextLineup);
       setLiveEnemyMS(nextEnemies);
       setEnemyHP(nextEnemies.map((unit) => unit.ms_armor));
       setActiveTab("MS1");
-      setPlayerHP(lineup.map((unit) => unit.armor));
-      setPlayerCharges(lineup.map(() => createInitialAttackCharges()));
+      setPlayerHP(nextLineup.map((unit) => unit.armor));
+      setPlayerCharges(nextLineup.map(() => createInitialAttackCharges()));
       setEnemyCharges(nextEnemies.map(() => createInitialAttackCharges()));
       setPendingAttack(null);
       setBattleOutcome(null);
@@ -468,10 +520,13 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
       setLastTwoActors([null, null]);
       setPlayerUiRemovedSlots(new Set());
       setEnemyUiRemovedSlots(new Set());
-      prevPlayerHPRef.current = lineup.map((unit) => unit.armor);
+      prevPlayerHPRef.current = nextLineup.map((unit) => unit.armor);
       prevEnemyHPRef.current = nextEnemies.map((unit) => unit.ms_armor);
       restartBattleBgm();
       setShowBattleStartHeading(true);
+      setTurnCount(1);
+      winRewardsAppliedRef.current = false;
+      setWinSummaryData(null);
     } catch {
       setLogLines((prev) => [
         ...prev,
@@ -483,16 +538,16 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
   }
 
   const maxPlayerHP = useMemo(
-    () => lineup.map((unit) => unit.armor),
-    [lineup],
+    () => liveLineup.map((unit) => unit.armor),
+    [liveLineup],
   );
   const maxEnemyHP = useMemo(
     () => liveEnemyMS.map((unit) => unit.ms_armor),
     [liveEnemyMS],
   );
 
-  const lineupNames = lineup.map((unit) => unit.name);
-  const lineupPics = lineup.map((unit) => unit.pic);
+  const lineupNames = liveLineup.map((unit) => unit.name);
+  const lineupPics = liveLineup.map((unit) => unit.pic);
   const enemyNames = liveEnemyMS.map((unit) => unit.ms_name);
   const enemyPics = liveEnemyMS.map((unit) => unit.ms_pic);
 
@@ -542,7 +597,7 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
 
     playBoomSound();
 
-    const unit = lineup[pa.unitIndex]!;
+    const unit = liveLineup[pa.unitIndex]!;
     const action = pa.action;
     const baseDmg = getDamageForAction(unit, action);
     const label = getActionLabel(unit, action);
@@ -611,7 +666,7 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
       setEnemyEvadeFlashIndex(null);
 
       const counter = runEnemyCounterAttack(
-        lineup,
+        liveLineup,
         liveEnemyMS,
         snapshotEnemyHP,
         snapshotPlayerHP,
@@ -658,12 +713,18 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
         setLogLines((prev) => [...prev, "All your units were defeated."]);
       }
 
+      setTurnCount((c) => c + 1);
       setIsEnemyTurnPending(false);
     }, ENEMY_COUNTER_DELAY_MS);
   }
 
   return (
     <>
+      <BattleWinSummaryModal
+        open={winSummaryData != null}
+        data={winSummaryData}
+        onOk={() => setWinSummaryData(null)}
+      />
       <section className="battle-arena-section">
         <div className="arena-container grid grid-cols-1 lg:grid-cols-3">
           <div className="player-units">
@@ -704,20 +765,23 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
             })}
           </div>
           <div className="arena-info">
+            <h1 className="text-4xl font-bold text-center text-3-dark m-0 w-full">
+              Turn: {turnCount}
+            </h1>
             {showBattleStartHeading && (
               <h2 className="text-2xl font-bold text-center text-3-dark m-0 w-full">
                 Battle Start
               </h2>
             )}
             {battleOutcome === "win" && (
-              <p className="text-center text-green-700 font-semibold m-0">
+              <h2 className="text-2xl font-bold text-center text-green-700 m-0">
                 Victory
-              </p>
+              </h2>
             )}
             {battleOutcome === "lose" && (
-              <p className="text-center text-red-600 font-semibold m-0">
+              <h2 className="text-2xl font-bold text-center text-red-600 m-0">
                 Defeat
-              </p>
+              </h2>
             )}
             {battleOutcome === null && isEnemyTurnPending && (
               <p className="text-center text-3-dark m-0 text-sm italic">
@@ -820,7 +884,7 @@ export default function BattleArenaClient({ lineup, enemyMS }: Props) {
               />
               <MSTabContents
                 activeTab={activeTab}
-                lineup={lineup}
+                lineup={liveLineup}
                 playerHP={playerHP}
                 playerCharges={playerCharges}
                 onSelectAction={handleSelectAction}

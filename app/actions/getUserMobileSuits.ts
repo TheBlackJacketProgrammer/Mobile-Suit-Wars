@@ -1,6 +1,10 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import {
+  coerceTotalExpFromRow,
+  levelAndProgressFromTotal,
+} from "@/lib/battleWinRewards";
 import { getUserId } from "./getUserId";
 
 export async function getUserMobileSuits() {
@@ -11,13 +15,20 @@ export async function getUserMobileSuits() {
             mobile_suits: true,
         },
     });
-    const mobileSuits = userMobileSuits.map((userMobileSuit) => ({
+    const mobileSuits = userMobileSuits.map((userMobileSuit) => {
+        const total = coerceTotalExpFromRow(
+            userMobileSuit.ums_level,
+            userMobileSuit.ums_exp,
+        );
+        const { level, progress } = levelAndProgressFromTotal(total);
+        return {
         mid: userMobileSuit.mobile_suits.ms_mid,
         name: userMobileSuit.mobile_suits.ms_name,
         pic: userMobileSuit.mobile_suits.ms_pic,
         armor: userMobileSuit.ums_armor,
-        level: userMobileSuit.ums_level,
-        exp: userMobileSuit.ums_exp,
+        level,
+        exp: progress,
+        totalExp: total,
         basicAtkdmg: userMobileSuit.ums_basicAtkdmg,
         atk1: userMobileSuit.mobile_suits.ms_atk1,
         atk2: userMobileSuit.mobile_suits.ms_atk2,
@@ -26,6 +37,7 @@ export async function getUserMobileSuits() {
         atk2dmg: userMobileSuit.mobile_suits.ms_atk2dmg + userMobileSuit.ums_atk2dmg,
         atk3dmg: userMobileSuit.mobile_suits.ms_atk3dmg + userMobileSuit.ums_atk3dmg,
         isOnLineup: userMobileSuit.ums_onLineup,
-    }));
+    };
+    });
     return mobileSuits;
 }

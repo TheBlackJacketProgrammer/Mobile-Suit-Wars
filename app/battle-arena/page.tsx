@@ -14,5 +14,15 @@ export default async function BattleArena() {
 
   const enemyMS = await getRandomEnemyMS();
 
-  return <BattleArenaClient lineup={lineup} enemyMS={enemyMS} />;
+  return (
+    <BattleArenaClient
+      lineup={lineup}
+      enemyMS={enemyMS}
+      userId={
+        userId != null && Number.isFinite(Number(userId))
+          ? Number(userId)
+          : null
+      }
+    />
+  );
 }

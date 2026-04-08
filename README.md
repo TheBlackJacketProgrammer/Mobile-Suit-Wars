@@ -1,10 +1,11 @@
 # Mobile Suit Wars
 
-A web app built with **Next.js** where players sign in, manage a **hangar** of mobile suits, spend in-game **G-points** in the **shop**, and (for admins) maintain the suit catalog in **MS Core**. Authentication uses **NextAuth** with credentials stored in **MySQL/MariaDB** via **Prisma**.
+A web app built with **Next.js** where players sign in, manage a **hangar** of mobile suits, fight in the **Battle Arena** with their active lineup, spend in-game **G-points** in the **shop**, and (for admins) maintain the suit catalog in **MS Core**. Authentication uses **NextAuth** with credentials stored in **MySQL/MariaDB** via **Prisma**.
 
 ## Features
 
 - **Sign in** — Username/password login with JWT sessions (`next-auth`).
+- **Battle Arena** — Turn-based battles using your hangar lineup vs random enemies; combat uses stats, crit/evade, and charge-based actions. Wins can grant **G-points** and **unit EXP** (levels affect damage/armor); rewards are applied via server actions and persisted in the database.
 - **Hangar** — View and edit owned suits, change active lineup units.
 - **Shop** — Browse and purchase mobile suits; balances tied to the user account.
 - **MS Core** *(Admin only)* — Create, edit, and manage the global mobile suit database.
@@ -59,7 +60,7 @@ npx prisma generate
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The sign-in page is the home route.
+Open [http://localhost:3000](http://localhost:3000). The sign-in page is the home route. After signing in, use the main nav for **Battle Arena**, **Hanger**, **Shop**, and (admins) **MS Core**.
 
 ### Other scripts
 
@@ -74,24 +75,27 @@ Open [http://localhost:3000](http://localhost:3000). The sign-in page is the hom
 
 ```
 app/
-  actions/          # Server actions (shop, hangar, suits, user)
+  actions/          # Server actions (shop, hangar, battle rewards, suits, user)
   api/              # Route handlers (auth, uploads, lineup, etc.)
+  battle-arena/     # Battle UI, combat logic modules, win summary modal
   hanger/           # User hangar UI
   shop/             # Shop UI
   ms-core/          # Admin mobile suit management
+  dashboard/        # Placeholder route (expand as needed)
   generated/prisma/ # Prisma Client (generated)
-components/        # Shared React components (nav, login, toast, audio)
-lib/               # Auth config, Prisma client, helpers
+components/         # Shared React components (nav, login, toast, audio)
+lib/                # Auth config, Prisma client, lineup helpers, battle reward math
 prisma/
-  schema.prisma    # Database models
-assets/styles/     # Global and component SCSS
-public/            # Static assets (images, sounds)
+  schema.prisma     # Database models
+assets/styles/      # Global and component SCSS (incl. battle arena page styles)
+public/             # Static assets (images, sounds, mobile suit art)
 ```
 
 ## Development notes
 
 - **LAN / device testing:** `next.config.ts` sets `allowedDevOrigins` for local network IPs; adjust if your subnet differs.
 - **Admin access:** Users with `u_type === "Admin"` see the **MS Core** link in the main navbar.
+- **Battle lineup:** The arena uses the same active lineup as the hangar (`user_has_mobile_suits` / lineup flags). Server helpers live under `lib/getMSLineUp.ts` and related actions.
 - This repo’s Prisma schema targets an existing-style MySQL schema (`user`, `mobile_suits`, `user_has_mobile_suits`, etc.). Align `DATABASE_URL` and migrations with your actual database.
 
 ## Learn more

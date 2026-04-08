@@ -17,7 +17,7 @@ type EnemyAttackOption = {
 };
 
 const ENEMY_BASIC_WEIGHT = 1;
-const ENEMY_SKILL_WEIGHT = 4;
+const ENEMY_SKILL_WEIGHT = 10;
 
 function buildEnemyAttackOptions(enemy: mobile_suits): EnemyAttackOption[] {
   const opts: EnemyAttackOption[] = [
