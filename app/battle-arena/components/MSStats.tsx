@@ -6,12 +6,6 @@ type Props = {
   hoveredAction: MSActionHover | null;
 };
 
-function basicAttackDamage(lineup: MSLineUpUnit): number {
-  const avg =
-    (lineup.skill1dmg + lineup.skill2dmg + lineup.skill3dmg) / 3;
-  return Math.max(1, Math.round(avg * 0.4));
-}
-
 function resolveAction(
   lineup: MSLineUpUnit,
   hovered: MSActionHover | null,
