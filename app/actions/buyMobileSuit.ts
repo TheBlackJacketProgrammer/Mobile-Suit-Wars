@@ -41,6 +41,7 @@ export async function buyMobileSuit( ms_id: number) {
             ums_armor: 0,
             ums_level: 1,
             ums_exp: 0,
+            ums_basicAtkdmg: 0,
             ums_atk1dmg: 0,
             ums_atk2dmg: 0,
             ums_atk3dmg: 0,

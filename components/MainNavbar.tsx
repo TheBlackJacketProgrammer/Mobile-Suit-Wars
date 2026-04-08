@@ -30,7 +30,7 @@ export default function MainNavbar() {
                     </div>
 
                     <div className="site-nav-links">
-                        <Link href="/" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>
+                        <Link href="/battle-arena" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>
                             Battle Arena
                         </Link>
                         <Link href="/hanger" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>

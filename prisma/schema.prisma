@@ -25,6 +25,7 @@ model mobile_suits {
   ms_atk1               String                  @db.VarChar(45)
   ms_atk2               String                  @db.VarChar(45)
   ms_atk3               String                  @db.VarChar(45)
+  ms_basicAtkdmg        Int                     @default(0)
   ms_atk1dmg            Int
   ms_atk2dmg            Int
   ms_atk3dmg            Int
@@ -47,17 +48,18 @@ model user {
 }
 
 model user_has_mobile_suits {
-  u_id         Int
-  ms_id        Int
-  ums_armor    Int
-  ums_level    Int
-  ums_exp      Int
-  ums_atk1dmg  Int
-  ums_atk2dmg  Int
-  ums_atk3dmg  Int
-  ums_onLineup String       @db.VarChar(45)
-  mobile_suits mobile_suits @relation(fields: [ms_id], references: [ms_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_mobile_suits1")
-  user         user         @relation(fields: [u_id], references: [u_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_user")
+  u_id            Int
+  ms_id           Int
+  ums_armor       Int
+  ums_level       Int
+  ums_exp         Int
+  ums_basicAtkdmg Int          @default(0)
+  ums_atk1dmg     Int
+  ums_atk2dmg     Int
+  ums_atk3dmg     Int
+  ums_onLineup    String       @db.VarChar(45)
+  mobile_suits    mobile_suits @relation(fields: [ms_id], references: [ms_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_mobile_suits1")
+  user            user         @relation(fields: [u_id], references: [u_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_has_mobile_suits_user")
 
   @@id([u_id, ms_id])
   @@index([ms_id], map: "fk_user_has_mobile_suits_mobile_suits1_idx")

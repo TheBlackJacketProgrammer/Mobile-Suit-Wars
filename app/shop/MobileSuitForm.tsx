@@ -103,6 +103,10 @@ export default function MobileSuitForm({selectedMS, onClearSelection,}: {
                         <input type="number" value={formData.ms_exp} onChange={(e) => setFormData({ ...formData, ms_exp: Number(e.target.value) })} placeholder="Mobile Suit Experience" disabled={!!selectedMS} />
                     </div>
                 </div>
+                <div className="form-group col-span-1">
+                    <label htmlFor="ms_basicAtkdmg" className="px-2 mb-1 font-bold">Basic Atk Dmg</label>
+                    <input type="number" value={formData.ms_basicAtkdmg} onChange={(e) => setFormData({ ...formData, ms_basicAtkdmg: Number(e.target.value) })} placeholder="Mobile Suit Basic Atk DMG" disabled={!!selectedMS} />
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                     <div className="form-group col-span-2">
                         <label htmlFor="ms_atk1" className="px-2 mb-1 font-bold">Skill 1</label>

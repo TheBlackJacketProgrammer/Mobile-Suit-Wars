@@ -18,6 +18,7 @@ export async function getUserMobileSuits() {
         armor: userMobileSuit.ums_armor,
         level: userMobileSuit.ums_level,
         exp: userMobileSuit.ums_exp,
+        basicAtkdmg: userMobileSuit.ums_basicAtkdmg,
         atk1: userMobileSuit.mobile_suits.ms_atk1,
         atk2: userMobileSuit.mobile_suits.ms_atk2,
         atk3: userMobileSuit.mobile_suits.ms_atk3,

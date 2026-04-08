@@ -10,6 +10,7 @@ export async function getMobileSuitList() {
         ms_armor: ms.ms_armor,
         ms_level: ms.ms_level,
         ms_exp: ms.ms_exp,
+        ms_basicAtkdmg: ms.ms_basicAtkdmg,
         ms_atk1: ms.ms_atk1,
         ms_atk2: ms.ms_atk2,
         ms_atk3: ms.ms_atk3,

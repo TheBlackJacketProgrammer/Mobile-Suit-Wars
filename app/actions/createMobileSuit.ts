@@ -8,6 +8,7 @@ export async function createCharacter(data: {
   armor: number;
   level: number;
   exp: number;
+  basicAtkdmg: number;
   atk1: string;
   atk2: string;
   atk3: string;
@@ -24,6 +25,7 @@ export async function createCharacter(data: {
       ms_armor: data.armor,
       ms_level: data.level,
       ms_exp: data.exp,
+      ms_basicAtkdmg: data.basicAtkdmg,
       ms_atk1: data.atk1,
       ms_atk2: data.atk2,
       ms_atk3: data.atk3,

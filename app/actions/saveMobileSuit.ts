@@ -27,6 +27,7 @@ export async function saveMobileSuit(
     ms_armor: num(ms.ms_armor),
     ms_level: num(ms.ms_level),
     ms_exp: num(ms.ms_exp),
+    ms_basicAtkdmg: num(ms.ms_basicAtkdmg),
     ms_atk1: ms.ms_atk1.trim(),
     ms_atk2: ms.ms_atk2.trim(),
     ms_atk3: ms.ms_atk3.trim(),

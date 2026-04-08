@@ -1,6 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
 
 export const authOptions: NextAuthOptions = {
@@ -20,6 +19,7 @@ export const authOptions: NextAuthOptions = {
         const password = credentials?.password;
         if (!username || !password) return null;
 
+        const prisma = (await import("@/lib/prisma")).default;
         const user = await prisma.user.findUnique({
           where: { u_account: username },
         });

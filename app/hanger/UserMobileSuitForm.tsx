@@ -14,6 +14,7 @@ type UserMobileSuit = {
     armor: number;
     level: number;
     exp: number;
+    basicAtkdmg: number;
     atk1: string;
     atk2: string;
     atk3: string;
@@ -31,6 +32,7 @@ function emptyUserMobileSuit(): UserMobileSuit {
         armor: 0,
         level: 0,
         exp: 0,
+        basicAtkdmg: 0,
         atk1: "",
         atk2: "",
         atk3: "",
@@ -120,6 +122,10 @@ export default function UserMobileSuitForm({
                             <label htmlFor="exp" className="px-2 mb-1 font-bold">Exp</label>
                             <input type="number" value={formData.exp} onChange={(e) => setFormData({ ...formData, exp: Number(e.target.value) })} placeholder="Mobile Suit Experience" disabled={!!selectedMS} />
                         </div>
+                    </div>
+                    <div className="form-group col-span-1">
+                        <label htmlFor="basicAtkdmg" className="px-2 mb-1 font-bold">Basic Atk Dmg</label>
+                        <input type="number" value={formData.basicAtkdmg} onChange={(e) => setFormData({ ...formData, basicAtkdmg: Number(e.target.value) })} placeholder="Mobile Suit Basic Atk DMG" disabled={!!selectedMS} />
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                         <div className="form-group col-span-2">

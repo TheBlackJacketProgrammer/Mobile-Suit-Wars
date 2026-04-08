@@ -47,6 +47,10 @@ export default async function Hanger() {
               </div>
               <h6 className="hanger-item-information-subtitle">Skill Sets</h6>
               <div className="flex flex-row gap-2 w-full items-center justify-between">
+                <p className="text-3-dark m-0 font-bold p-base">Basic Atk Dmg</p>
+                <p className="text-5-mid m-0 p-base"><b>DMG:</b> {item.basicAtkdmg}</p>
+              </div>
+              <div className="flex flex-row gap-2 w-full items-center justify-between">
                 <p className="text-3-dark m-0 font-bold p-base">{item.skill1}</p>
                 <p className="text-5-mid m-0 p-base"><b>DMG:</b> {item.skill1dmg}</p>
               </div>
