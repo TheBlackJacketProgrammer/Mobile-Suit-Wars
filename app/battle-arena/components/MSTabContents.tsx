@@ -2,6 +2,7 @@
 
 import type { MSLineUpUnit } from "@/lib/getMSLineUp";
 import { useEffect, useState } from "react";
+import type { UnitAttackCharges } from "../battleAttackCharges";
 import type { MSActionHover, TabType } from "../types";
 import MSActions from "./MSActions";
 import MSStats from "./MSStats";
@@ -11,6 +12,8 @@ type Props = {
   lineup: MSLineUpUnit[];
   /** Per-slot current armor in battle (matches HP bars). */
   playerHP: number[];
+  /** Per-slot attack uses / cooldowns. */
+  playerCharges: UnitAttackCharges[];
   onSelectAction: (action: MSActionHover) => void;
   actionsDisabled: boolean;
 };
@@ -24,11 +27,13 @@ function tabToIndex(tab: TabType): number {
 function MSUnitActionsStats({
   unit,
   currentArmor,
+  charges,
   onSelectAction,
   actionsDisabled,
 }: {
   unit: MSLineUpUnit;
   currentArmor: number;
+  charges: UnitAttackCharges;
   onSelectAction: (action: MSActionHover) => void;
   actionsDisabled: boolean;
 }) {
@@ -44,6 +49,7 @@ function MSUnitActionsStats({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <MSActions
         lineup={unit}
+        charges={charges}
         onHoverAction={setHoveredAction}
         onSelectAction={onSelectAction}
         disabled={actionsDisabled}
@@ -52,6 +58,7 @@ function MSUnitActionsStats({
         lineup={unit}
         hoveredAction={hoveredAction}
         currentArmor={currentArmor}
+        charges={charges}
       />
     </div>
   );
@@ -67,11 +74,13 @@ export default function MSContent({
   activeTab,
   lineup,
   playerHP,
+  playerCharges,
   onSelectAction,
   actionsDisabled,
 }: Props) {
   const idx = tabToIndex(activeTab);
   const currentArmor = playerHP[idx] ?? 0;
+  const charges = playerCharges[idx]!;
 
   return (
     <div className="ms-tab-contents">
@@ -79,6 +88,7 @@ export default function MSContent({
         key={activeTab}
         unit={unitForTab(activeTab, lineup)}
         currentArmor={currentArmor}
+        charges={charges}
         onSelectAction={onSelectAction}
         actionsDisabled={actionsDisabled}
       />

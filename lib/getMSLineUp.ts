@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 export type MSLineUpUnit = {
   name: string;
   mid: string;
+  cost: string;
   level: number;
   exp: number;
   armor: number;
@@ -31,6 +32,7 @@ export async function getMSLineUp(userId: number): Promise<MSLineUpUnit[]> {
   const lineup: MSLineUpUnit[] = result.map((item) => ({
     name: item.mobile_suits.ms_name,
     mid: item.mobile_suits.ms_mid,
+    cost: item.mobile_suits.ms_cost,
     level: item.ums_level,
     exp: item.ums_exp,
     armor: item.mobile_suits.ms_armor + item.ums_armor,

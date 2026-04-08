@@ -59,11 +59,36 @@ main {
                             pointer-events: none;
                             background: url("/images/explode.gif") center center / cover no-repeat;
                         }
+
+                        .evaded-overlay {
+                            display: none;
+                            position: absolute;
+                            inset: 0;
+                            z-index: 3;
+                            pointer-events: none;
+                            background: url("/images/Evaded.png") center center / contain no-repeat;
+                        }
                     }
 
-                    .image-container.player-1:active .exploded-overlay,
-                    .image-container.player-2:active .exploded-overlay,
-                    .image-container.player-3:active .exploded-overlay,
+                    .image-container.battle-arena-player-benched {
+                        cursor: not-allowed;
+                        // box-shadow: inset 0 0 0 2px rgba(217, 119, 6, 0.5);
+                        // border-radius: $border-radius-sm;
+                        background-color: $basic-light-gray;
+
+                        /* Grayscale portrait only — HP bar lives outside this box. */
+                        img {
+                            filter: grayscale(1);
+                        }
+                    }
+
+                    .image-container.player-1.battle-arena-player-evade .evaded-overlay,
+                    .image-container.player-2.battle-arena-player-evade .evaded-overlay,
+                    .image-container.player-3.battle-arena-player-evade .evaded-overlay {
+                        display: block;
+                        animation: battle-arena-enemy-shake 0.4s ease-in-out infinite;
+                    }
+
                     .image-container.player-1.battle-arena-player-hit .exploded-overlay,
                     .image-container.player-2.battle-arena-player-hit .exploded-overlay,
                     .image-container.player-3.battle-arena-player-hit .exploded-overlay {
@@ -116,6 +141,22 @@ main {
                             pointer-events: none;
                             background: url("/images/explode.gif") center center / cover no-repeat;
                         }
+
+                        .evaded-overlay {
+                            display: none;
+                            position: absolute;
+                            inset: 0;
+                            z-index: 3;
+                            pointer-events: none;
+                            background: url("/images/Evaded.png") center center / contain no-repeat;
+                        }
+                    }
+
+                    .image-container.enemy-1.battle-arena-enemy-evade .evaded-overlay,
+                    .image-container.enemy-2.battle-arena-enemy-evade .evaded-overlay,
+                    .image-container.enemy-3.battle-arena-enemy-evade .evaded-overlay {
+                        display: block;
+                        animation: battle-arena-enemy-shake 0.4s ease-in-out infinite;
                     }
 
                     .image-container.enemy-1:active .exploded-overlay,
@@ -152,9 +193,44 @@ main {
                     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
                     padding: 16px;
 
+                    .ms-tabs__btn--blocked {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+
+                        &:disabled {
+                            opacity: 0.5;
+                        }
+                    }
+
                     .ms-actions {
                         .btn-primary {
-                            padding: 8px 16px !important; 
+                            padding: 8px 16px !important;
+
+                            /* Out of uses: looks unavailable but still receives hover for MSStats. */
+                            &.ms-actions__btn--exhausted {
+                                opacity: 0.45;
+                                cursor: not-allowed;
+                                filter: grayscale(0.4);
+
+                                &:hover,
+                                &:active {
+                                    filter: grayscale(0.4);
+                                    transform: none;
+                                }
+                            }
+
+                            &:disabled {
+                                opacity: 0.45;
+                                cursor: not-allowed;
+                                filter: grayscale(0.4);
+                                pointer-events: none;
+
+                                &:hover,
+                                &:active {
+                                    filter: grayscale(0.4);
+                                    transform: none;
+                                }
+                            }
                         }
 
                         &.ms-actions--locked {
@@ -234,6 +310,19 @@ main {
                         border-radius: $border-radius-sm;
                         padding: 8px;
                         resize: none;
+                    }
+
+                    .action-logs-scroll {
+                        width: 100%;
+                        min-height: 120px;
+                        max-height: 10rem;
+                        overflow-y: auto;
+                        border: 1px solid $border-color;
+                        border-radius: $border-radius-sm;
+                        padding: 8px;
+                        background-color: $white;
+                        align-self: stretch;
+                        text-align: left;
                     }
                 }
             }

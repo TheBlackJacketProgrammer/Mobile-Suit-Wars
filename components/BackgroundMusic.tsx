@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+/** Imperative hooks for pages that need to pause/restart looped BGM (e.g. battle stingers). */
+export type ExternalBgmControls = {
+  pause: () => void;
+  resume: () => void;
+  restartFromBeginning: () => void;
+};
+
 type Props = {
   /** Path under `public/`, e.g. `/sounds/bgm.mp3` */
   src: string;
@@ -11,12 +18,15 @@ type Props = {
    * until the user interacts; we retry once on the first click/keypress.
    */
   autoPlay?: boolean;
+  /** Called with controls when the audio element is ready; `null` on cleanup. */
+  registerExternalControls?: (controls: ExternalBgmControls | null) => void;
 };
 
 export default function BackgroundMusic({
   src,
   volume = 0.35,
   autoPlay = true,
+  registerExternalControls,
 }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -73,6 +83,37 @@ export default function BackgroundMusic({
       window.removeEventListener("keydown", onGesture, true);
     };
   }, [autoPlay, volume, src]);
+
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el || !registerExternalControls) return;
+
+    const pause = () => {
+      el.pause();
+      setPlaying(false);
+    };
+    const resume = () => {
+      if (userPausedRef.current) return;
+      el.volume = volume;
+      void el
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
+    };
+    const restartFromBeginning = () => {
+      userPausedRef.current = false;
+      el.pause();
+      el.currentTime = 0;
+      el.volume = volume;
+      void el
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
+    };
+
+    registerExternalControls({ pause, resume, restartFromBeginning });
+    return () => registerExternalControls(null);
+  }, [registerExternalControls, volume, src]);
 
   const toggle = useCallback(() => {
     const el = audioRef.current;
