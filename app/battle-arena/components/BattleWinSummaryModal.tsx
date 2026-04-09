@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ApplyBattleWinSuccess } from "../../actions/applyBattleWinRewards";
 import {
   ARMOR_BONUS_PER_LEVEL_UP,
@@ -10,9 +11,15 @@ type Props = {
   open: boolean;
   data: ApplyBattleWinSuccess | null;
   onOk: () => void;
+  okDisabled?: boolean;
 };
 
-export default function BattleWinSummaryModal({ open, data, onOk }: Props) {
+export default function BattleWinSummaryModal({
+  open,
+  data,
+  onOk,
+  okDisabled = false,
+}: Props) {
   if (!open || !data) return null;
 
   return (
@@ -110,13 +117,22 @@ export default function BattleWinSummaryModal({ open, data, onOk }: Props) {
           ))}
         </div>
 
-        <button
-          type="button"
-          className="battle-win-summary-ok btn-primary"
-          onClick={onOk}
-        >
-          Ok
-        </button>
+        <div className="battle-win-summary-actions">
+          <button
+            type="button"
+            className="battle-win-summary-ok btn-primary"
+            disabled={okDisabled}
+            onClick={onOk}
+          >
+            {okDisabled ? "Loading…" : "New game"}
+          </button>
+          <Link
+            href="/hanger"
+            className="battle-win-summary-hanger btn-secondary-transparent"
+          >
+            Go to hanger
+          </Link>
+        </div>
       </div>
     </div>
   );

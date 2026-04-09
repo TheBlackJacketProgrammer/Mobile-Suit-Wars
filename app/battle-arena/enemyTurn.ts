@@ -1,5 +1,10 @@
 import type { mobile_suits } from "../generated/prisma/client";
 import type { MSLineUpUnit } from "@/lib/getMSLineUp";
+import {
+  enemyAttackerCritBonusFromAvgLineup,
+  scaleEnemyBasicDamageForLineup,
+  scaleEnemySkillDamageForLineup,
+} from "@/lib/enemyLineupScaling";
 import type { BattleLogPart } from "./battleLog";
 import { buildAttackLogLine, resolveAttackOutcome } from "./battleCritEvade";
 import {
@@ -19,26 +24,32 @@ type EnemyAttackOption = {
 const ENEMY_BASIC_WEIGHT = 1;
 const ENEMY_SKILL_WEIGHT = 10;
 
-function buildEnemyAttackOptions(enemy: mobile_suits): EnemyAttackOption[] {
+function buildEnemyAttackOptions(
+  enemy: mobile_suits,
+  avgLineupLevel: number,
+): EnemyAttackOption[] {
   const opts: EnemyAttackOption[] = [
     {
       label: "Basic Attack",
-      damage: enemy.ms_basicAtkdmg,
+      damage: scaleEnemyBasicDamageForLineup(
+        enemy.ms_basicAtkdmg,
+        avgLineupLevel,
+      ),
       action: "basic",
     },
     {
       label: enemy.ms_atk1,
-      damage: enemy.ms_atk1dmg,
+      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk1dmg, avgLineupLevel),
       action: "skill1",
     },
     {
       label: enemy.ms_atk2,
-      damage: enemy.ms_atk2dmg,
+      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk2dmg, avgLineupLevel),
       action: "skill2",
     },
     {
       label: enemy.ms_atk3,
-      damage: enemy.ms_atk3dmg,
+      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk3dmg, avgLineupLevel),
       action: "skill3",
     },
   ];
@@ -48,8 +59,9 @@ function buildEnemyAttackOptions(enemy: mobile_suits): EnemyAttackOption[] {
 function pickRandomEnemyAttack(
   enemy: mobile_suits,
   charges: UnitAttackCharges,
+  avgLineupLevel: number,
 ): EnemyAttackOption | null {
-  const all = buildEnemyAttackOptions(enemy);
+  const all = buildEnemyAttackOptions(enemy, avgLineupLevel);
   const usable = all.filter(
     (o) => o.damage > 0 && canUseAction(charges, o.action),
   );
@@ -79,8 +91,11 @@ function pickRandomEnemyAttack(
 function enemyHasUsableAttack(
   enemy: mobile_suits,
   ch: UnitAttackCharges,
+  avgLineupLevel: number,
 ): boolean {
-  return buildEnemyAttackOptions(enemy).some((o) => canUseAction(ch, o.action));
+  return buildEnemyAttackOptions(enemy, avgLineupLevel).some((o) =>
+    canUseAction(ch, o.action),
+  );
 }
 
 export function runEnemyCounterAttack(
@@ -89,6 +104,7 @@ export function runEnemyCounterAttack(
   enemyHP: number[],
   playerHP: number[],
   enemyCharges: UnitAttackCharges[],
+  avgLineupLevel: number,
 ): {
   newPlayerHP: number[];
   nextEnemyCharges: UnitAttackCharges[];
@@ -107,7 +123,7 @@ export function runEnemyCounterAttack(
 
   const pickFrom = aliveEnemyIdx.filter((i) => {
     const ch = enemyCharges[i] ?? createInitialAttackCharges();
-    return enemyHasUsableAttack(enemyMS[i]!, ch);
+    return enemyHasUsableAttack(enemyMS[i]!, ch, avgLineupLevel);
   });
   if (pickFrom.length === 0) return null;
 
@@ -118,7 +134,7 @@ export function runEnemyCounterAttack(
   const defender = lineup[pIdx]!;
   const slotCharges = enemyCharges[eIdx] ?? createInitialAttackCharges();
 
-  const attack = pickRandomEnemyAttack(enemy, slotCharges);
+  const attack = pickRandomEnemyAttack(enemy, slotCharges, avgLineupLevel);
   if (!attack) return null;
   const consumed = consumeCharge(slotCharges, attack.action);
   if (!consumed) return null;
@@ -132,6 +148,9 @@ export function runEnemyCounterAttack(
     attack.damage,
     enemy.ms_cost,
     defender.cost,
+    {
+      attackerCritBonus: enemyAttackerCritBonusFromAvgLineup(avgLineupLevel),
+    },
   );
 
   const newPlayerHP = [...playerHP];

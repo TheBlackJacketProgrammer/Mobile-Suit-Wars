@@ -478,13 +478,44 @@ main {
     color: #f87171;
 }
 
-.battle-win-summary-ok {
-    display: block;
-    width: 100%;
-    max-width: 200px;
-    margin: 0 auto;
-    padding: 10px 20px;
-    font-weight: 700;
+.battle-lose-summary-title {
+    color: #f87171;
+}
+
+.battle-lose-summary-message {
+    margin: 0 0 20px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    text-align: center;
+    color: #cbd5e1;
+}
+
+.battle-lose-summary-actions {
+    margin-top: 0;
+}
+
+.battle-win-summary-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+
+    .battle-win-summary-ok,
+    .battle-win-summary-hanger {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 0;
+        padding: 10px 20px;
+        font-weight: 700;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .battle-win-summary-hanger {
+        line-height: 1.2;
+    }
 }
 
 @keyframes battle-arena-enemy-shake {

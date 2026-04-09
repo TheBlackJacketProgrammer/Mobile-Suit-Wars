@@ -20,10 +20,16 @@ import type { ApplyBattleWinSuccess } from "../actions/applyBattleWinRewards";
 import { toast } from "react-toastify";
 import { applyBattleWinRewards } from "../actions/applyBattleWinRewards";
 import { fetchMSLineupForBattle } from "../actions/fetchMSLineupForBattle";
+import BattleLoseModal from "./components/BattleLoseModal";
 import BattleWinSummaryModal from "./components/BattleWinSummaryModal";
 import { refreshBattleEnemies } from "../actions/refreshBattleEnemies";
 import type { BattleLogEntry, BattleLogPart } from "./battleLog";
 import { buildAttackLogLine, resolveAttackOutcome } from "./battleCritEvade";
+import {
+  averageMsLineupLevel,
+  enemyDefenderEvadeBonusFromAvgLineup,
+  scaleEnemyArmorForLineup,
+} from "@/lib/enemyLineupScaling";
 import { useBattleArenaBgmControlsRef } from "./battleArenaBgmContext";
 
 type Props = {
@@ -152,9 +158,12 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const [playerHP, setPlayerHP] = useState<number[]>(() =>
     lineup.map((unit) => unit.armor),
   );
-  const [enemyHP, setEnemyHP] = useState<number[]>(() =>
-    enemyMS.map((unit) => unit.ms_armor),
-  );
+  const [enemyHP, setEnemyHP] = useState<number[]>(() => {
+    const avg = averageMsLineupLevel(lineup);
+    return enemyMS.map((unit) =>
+      scaleEnemyArmorForLineup(unit.ms_armor, avg),
+    );
+  });
   const [playerCharges, setPlayerCharges] = useState(() =>
     lineup.map(() => createInitialAttackCharges()),
   );
@@ -198,7 +207,12 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     () => new Set<number>(),
   );
   const prevPlayerHPRef = useRef<number[]>(lineup.map((u) => u.armor));
-  const prevEnemyHPRef = useRef<number[]>(enemyMS.map((u) => u.ms_armor));
+  const prevEnemyHPRef = useRef<number[]>(
+    (() => {
+      const avg = averageMsLineupLevel(lineup);
+      return enemyMS.map((u) => scaleEnemyArmorForLineup(u.ms_armor, avg));
+    })(),
+  );
   const playerDestroyUiTimersRef = useRef<
     Map<number, ReturnType<typeof setTimeout>>
   >(new Map());
@@ -504,7 +518,12 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       }
       setLiveLineup(nextLineup);
       setLiveEnemyMS(nextEnemies);
-      setEnemyHP(nextEnemies.map((unit) => unit.ms_armor));
+      const nextAvg = averageMsLineupLevel(nextLineup);
+      setEnemyHP(
+        nextEnemies.map((unit) =>
+          scaleEnemyArmorForLineup(unit.ms_armor, nextAvg),
+        ),
+      );
       setActiveTab("MS1");
       setPlayerHP(nextLineup.map((unit) => unit.armor));
       setPlayerCharges(nextLineup.map(() => createInitialAttackCharges()));
@@ -521,7 +540,9 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       setPlayerUiRemovedSlots(new Set());
       setEnemyUiRemovedSlots(new Set());
       prevPlayerHPRef.current = nextLineup.map((unit) => unit.armor);
-      prevEnemyHPRef.current = nextEnemies.map((unit) => unit.ms_armor);
+      prevEnemyHPRef.current = nextEnemies.map((unit) =>
+        scaleEnemyArmorForLineup(unit.ms_armor, nextAvg),
+      );
       restartBattleBgm();
       setShowBattleStartHeading(true);
       setTurnCount(1);
@@ -541,9 +562,16 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     () => liveLineup.map((unit) => unit.armor),
     [liveLineup],
   );
+  const lineupAvgLevel = useMemo(
+    () => averageMsLineupLevel(liveLineup),
+    [liveLineup],
+  );
   const maxEnemyHP = useMemo(
-    () => liveEnemyMS.map((unit) => unit.ms_armor),
-    [liveEnemyMS],
+    () =>
+      liveEnemyMS.map((unit) =>
+        scaleEnemyArmorForLineup(unit.ms_armor, lineupAvgLevel),
+      ),
+    [liveEnemyMS, lineupAvgLevel],
   );
 
   const lineupNames = liveLineup.map((unit) => unit.name);
@@ -602,11 +630,9 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     const baseDmg = getDamageForAction(unit, action);
     const label = getActionLabel(unit, action);
     const defenderEnemy = liveEnemyMS[enemyIndex]!;
-    const outcome = resolveAttackOutcome(
-      baseDmg,
-      unit.cost,
-      defenderEnemy.ms_cost,
-    );
+    const outcome = resolveAttackOutcome(baseDmg, unit.cost, defenderEnemy.ms_cost, {
+      defenderEvadeBonus: enemyDefenderEvadeBonusFromAvgLineup(lineupAvgLevel),
+    });
 
     const nextEnemyHP = [...enemyHP];
     if (!outcome.evaded) {
@@ -659,6 +685,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     const snapshotPlayerHP = [...playerHP];
     const snapshotEnemyHP = nextEnemyHP;
     const snapshotEnemyCharges = [...enemyCharges];
+    const snapshotAvgLineupLevel = averageMsLineupLevel(liveLineup);
 
     enemyCounterDelayRef.current = setTimeout(() => {
       enemyCounterDelayRef.current = null;
@@ -671,6 +698,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
         snapshotEnemyHP,
         snapshotPlayerHP,
         snapshotEnemyCharges,
+        snapshotAvgLineupLevel,
       );
 
       setPlayerCharges((prev) => advanceAllUnitCharges(prev));
@@ -723,7 +751,17 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       <BattleWinSummaryModal
         open={winSummaryData != null}
         data={winSummaryData}
-        onOk={() => setWinSummaryData(null)}
+        okDisabled={endBattleBusy}
+        onOk={() => {
+          void handleEndBattle();
+        }}
+      />
+      <BattleLoseModal
+        open={battleOutcome === "lose"}
+        newGameDisabled={endBattleBusy}
+        onNewGame={() => {
+          void handleEndBattle();
+        }}
       />
       <section className="battle-arena-section">
         <div className="arena-container grid grid-cols-1 lg:grid-cols-3">

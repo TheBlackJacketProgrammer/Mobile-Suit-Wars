@@ -8,6 +8,7 @@ const HOVER_SOUND = "/sounds/bgm-btn-hover.wav";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export default function LoginForm() {
             autoComplete="current-password"
           />
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <button
             className="btn-primary"
             type="button"
@@ -86,6 +87,7 @@ export default function LoginForm() {
           >
             {pending ? "Signing in…" : "Login"}
           </button>
+          <Link href="/register" className="btn-secondary">Register</Link>
         </div>
       </div>
     </section>

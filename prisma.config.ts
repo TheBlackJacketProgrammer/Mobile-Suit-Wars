@@ -9,6 +9,8 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env.DATABASE_URL,
+    // Prisma CLI commands like `db pull`/migrations should use a direct DB connection,
+    // not the Supabase pooler (PgBouncer).
+    url: process.env.DIRECT_URL,
   },
 });
