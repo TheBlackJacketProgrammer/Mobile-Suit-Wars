@@ -14,10 +14,20 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+function getClient(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
 }
+
+// Lazily initialize so `next build` doesn't crash if env vars
+// are only present at runtime (e.g. Vercel).
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getClient() as any;
+    return client[prop];
+  },
+});
 
 export default prisma;
