@@ -91,8 +91,8 @@ export async function applyBattleWinRewards(input: {
     let slotIndex = 0;
     for (const row of lineupRows) {
       const survived = surviveSet.has(row.ms_id);
-      const lb = row.ums_level;
-      const eb = row.ums_exp;
+      const lb = row.ums_level ?? 1;
+      const eb = row.ums_exp ?? 0;
 
       if (!survived) {
         const total = coerceTotalExpFromRow(lb, eb);
@@ -100,8 +100,8 @@ export async function applyBattleWinRewards(input: {
         units.push({
           slotIndex,
           msId: row.ms_id,
-          name: row.mobile_suits.ms_name,
-          modelId: row.mobile_suits.ms_mid,
+          name: row.mobile_suits.ms_name ?? "",
+          modelId: row.mobile_suits.ms_mid ?? "",
           levelBefore: level,
           levelGained: 0,
           levelAfter: level,
@@ -125,19 +125,19 @@ export async function applyBattleWinRewards(input: {
         data: {
           ums_level: r.newLevel,
           ums_exp: r.totalAfter,
-          ums_armor: row.ums_armor + armorBonus,
-          ums_basicAtkdmg: row.ums_basicAtkdmg + dmgBonus,
-          ums_atk1dmg: row.ums_atk1dmg + dmgBonus,
-          ums_atk2dmg: row.ums_atk2dmg + dmgBonus,
-          ums_atk3dmg: row.ums_atk3dmg + dmgBonus,
+          ums_armor: (row.ums_armor ?? 0) + armorBonus,
+          ums_basicAtkdmg: (row.ums_basicAtkdmg ?? 0) + dmgBonus,
+          ums_atk1dmg: (row.ums_atk1dmg ?? 0) + dmgBonus,
+          ums_atk2dmg: (row.ums_atk2dmg ?? 0) + dmgBonus,
+          ums_atk3dmg: (row.ums_atk3dmg ?? 0) + dmgBonus,
         },
       });
 
       units.push({
         slotIndex,
         msId: row.ms_id,
-        name: row.mobile_suits.ms_name,
-        modelId: row.mobile_suits.ms_mid,
+        name: row.mobile_suits.ms_name ?? "",
+        modelId: row.mobile_suits.ms_mid ?? "",
         levelBefore: r.levelBefore,
         levelGained: r.levelsGained,
         levelAfter: r.newLevel,

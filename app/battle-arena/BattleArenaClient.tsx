@@ -161,7 +161,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const [enemyHP, setEnemyHP] = useState<number[]>(() => {
     const avg = averageMsLineupLevel(lineup);
     return enemyMS.map((unit) =>
-      scaleEnemyArmorForLineup(unit.ms_armor, avg),
+      scaleEnemyArmorForLineup(unit.ms_armor ?? 0, avg),
     );
   });
   const [playerCharges, setPlayerCharges] = useState(() =>
@@ -210,7 +210,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const prevEnemyHPRef = useRef<number[]>(
     (() => {
       const avg = averageMsLineupLevel(lineup);
-      return enemyMS.map((u) => scaleEnemyArmorForLineup(u.ms_armor, avg));
+      return enemyMS.map((u) => scaleEnemyArmorForLineup(u.ms_armor ?? 0, avg));
     })(),
   );
   const playerDestroyUiTimersRef = useRef<
@@ -521,7 +521,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       const nextAvg = averageMsLineupLevel(nextLineup);
       setEnemyHP(
         nextEnemies.map((unit) =>
-          scaleEnemyArmorForLineup(unit.ms_armor, nextAvg),
+          scaleEnemyArmorForLineup(unit.ms_armor ?? 0, nextAvg),
         ),
       );
       setActiveTab("MS1");
@@ -541,7 +541,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       setEnemyUiRemovedSlots(new Set());
       prevPlayerHPRef.current = nextLineup.map((unit) => unit.armor);
       prevEnemyHPRef.current = nextEnemies.map((unit) =>
-        scaleEnemyArmorForLineup(unit.ms_armor, nextAvg),
+        scaleEnemyArmorForLineup(unit.ms_armor ?? 0, nextAvg),
       );
       restartBattleBgm();
       setShowBattleStartHeading(true);
@@ -569,7 +569,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const maxEnemyHP = useMemo(
     () =>
       liveEnemyMS.map((unit) =>
-        scaleEnemyArmorForLineup(unit.ms_armor, lineupAvgLevel),
+        scaleEnemyArmorForLineup(unit.ms_armor ?? 0, lineupAvgLevel),
       ),
     [liveEnemyMS, lineupAvgLevel],
   );
@@ -630,9 +630,14 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     const baseDmg = getDamageForAction(unit, action);
     const label = getActionLabel(unit, action);
     const defenderEnemy = liveEnemyMS[enemyIndex]!;
-    const outcome = resolveAttackOutcome(baseDmg, unit.cost, defenderEnemy.ms_cost, {
+    const outcome = resolveAttackOutcome(
+      baseDmg,
+      unit.cost,
+      defenderEnemy.ms_cost ?? 0,
+      {
       defenderEvadeBonus: enemyDefenderEvadeBonusFromAvgLineup(lineupAvgLevel),
-    });
+      },
+    );
 
     const nextEnemyHP = [...enemyHP];
     if (!outcome.evaded) {

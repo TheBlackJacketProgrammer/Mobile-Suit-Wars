@@ -6,23 +6,7 @@ import { changeUnit } from "@/app/actions/changeUnit";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-type UserMobileSuit = {
-    mid: string;
-    name: string;
-    pic: string;
-    armor: number;
-    level: number;
-    exp: number;
-    basicAtkdmg: number;
-    atk1: string;
-    atk2: string;
-    atk3: string;
-    atk1dmg: number;
-    atk2dmg: number;
-    atk3dmg: number;
-    isOnLineup: string;
-}
+import type { UserMobileSuit } from "./types";
 
 function emptyUserMobileSuit(): UserMobileSuit {
     return {

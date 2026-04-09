@@ -2,22 +2,7 @@
 
 import Pagination from "./Pagination";
 import BtnView from "./buttons/BtnView";
-
-type UserMobileSuit = {
-    mid: string;
-    name: string;
-    pic: string;
-    armor: number;
-    level: number;
-    exp: number;
-    atk1: string;
-    atk2: string;
-    atk3: string;
-    atk1dmg: number;
-    atk2dmg: number;
-    atk3dmg: number;
-    isOnLineup: string;
-};
+import type { UserMobileSuit } from "./types";
 
 export default function UserMobileSuitTable({userMobileSuits, page, total, onView}: {
     userMobileSuits: UserMobileSuit[];

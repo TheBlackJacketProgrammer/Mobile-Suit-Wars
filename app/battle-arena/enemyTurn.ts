@@ -32,24 +32,33 @@ function buildEnemyAttackOptions(
     {
       label: "Basic Attack",
       damage: scaleEnemyBasicDamageForLineup(
-        enemy.ms_basicAtkdmg,
+        enemy.ms_basicAtkdmg ?? 0,
         avgLineupLevel,
       ),
       action: "basic",
     },
     {
-      label: enemy.ms_atk1,
-      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk1dmg, avgLineupLevel),
+      label: enemy.ms_atk1 ?? "Skill 1",
+      damage: scaleEnemySkillDamageForLineup(
+        enemy.ms_atk1dmg ?? 0,
+        avgLineupLevel,
+      ),
       action: "skill1",
     },
     {
-      label: enemy.ms_atk2,
-      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk2dmg, avgLineupLevel),
+      label: enemy.ms_atk2 ?? "Skill 2",
+      damage: scaleEnemySkillDamageForLineup(
+        enemy.ms_atk2dmg ?? 0,
+        avgLineupLevel,
+      ),
       action: "skill2",
     },
     {
-      label: enemy.ms_atk3,
-      damage: scaleEnemySkillDamageForLineup(enemy.ms_atk3dmg, avgLineupLevel),
+      label: enemy.ms_atk3 ?? "Skill 3",
+      damage: scaleEnemySkillDamageForLineup(
+        enemy.ms_atk3dmg ?? 0,
+        avgLineupLevel,
+      ),
       action: "skill3",
     },
   ];
@@ -146,7 +155,7 @@ export function runEnemyCounterAttack(
 
   const outcome = resolveAttackOutcome(
     attack.damage,
-    enemy.ms_cost,
+    enemy.ms_cost ?? 0,
     defender.cost,
     {
       attackerCritBonus: enemyAttackerCritBonusFromAvgLineup(avgLineupLevel),
@@ -159,7 +168,7 @@ export function runEnemyCounterAttack(
   }
 
   const logEntry = buildAttackLogLine(
-    enemy.ms_name,
+    enemy.ms_name ?? "Enemy",
     attack.label,
     defender.name,
     outcome,

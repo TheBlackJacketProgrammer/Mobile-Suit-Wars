@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 
 export async function createCharacter(data: {
+  msId?: number;
   name: string;
   imageUrl: string;
   mid: string;
@@ -16,12 +17,25 @@ export async function createCharacter(data: {
   atk2dmg: number;
   atk3dmg: number;
 }) {
+  const costNum = (() => {
+    const digits = String(data.cost ?? "").replace(/\D/g, "");
+    const n = digits.length > 0 ? parseInt(digits, 10) : Number(data.cost);
+    return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+  })();
+
+  const msId =
+    typeof data.msId === "number" && Number.isInteger(data.msId) && data.msId > 0
+      ? data.msId
+      : ((await prisma.mobile_suits.aggregate({ _max: { ms_id: true } }))._max
+          .ms_id ?? 0) + 1;
+
   return await prisma.mobile_suits.create({
     data: {
+      ms_id: msId,
       ms_mid: data.mid,
       ms_name: data.name,
       ms_pic: data.imageUrl,
-      ms_cost: data.cost,
+      ms_cost: costNum,
       ms_armor: data.armor,
       ms_level: data.level,
       ms_exp: data.exp,

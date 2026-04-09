@@ -26,14 +26,14 @@ export default function MobileSuitTable({mobileSuits, page, total, onEdit}: {
                 </thead>
                 <tbody>
                     {mobileSuits.map((ms: mobile_suits) => (
-                        <tr key={ms.ms_mid}>
-                            <td>{ms.ms_mid}</td>
-                            <td>{ms.ms_name}</td>
-                            <td>{ms.ms_cost}</td>
+                        <tr key={ms.ms_mid ?? String(ms.ms_id)}>
+                            <td>{ms.ms_mid ?? ""}</td>
+                            <td>{ms.ms_name ?? ""}</td>
+                            <td>{ms.ms_cost ?? 0}</td>
                             <td>
                                 <div className="flex gap-2 justify-center items-center">
                                     <BtnEdit onEdit={() => onEdit(ms)} />
-                                    <BtnDelete ms_mid={ms.ms_mid} />
+                                    <BtnDelete ms_mid={ms.ms_mid ?? ""} />
                                 </div>
                             </td>
                         </tr>

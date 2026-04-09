@@ -30,10 +30,10 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: String(user.u_id),
-          name: user.u_name,
-          email: user.u_email,
-          account: user.u_account,
-          type: user.u_type,
+          name: user.u_name ?? username,
+          email: user.u_email ?? "",
+          account: user.u_account ?? username,
+          type: user.u_type ?? "User",
         };
       },
     }),

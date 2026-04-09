@@ -4,22 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import UserMobileSuitTable from "./UserMobileSuitTable";
 import { getUserMobileSuits } from "../actions/getUserMobileSuits";
 import UserMobileSuitForm from "./UserMobileSuitForm";
-
-type UserMobileSuit = {
-    mid: string;
-    name: string;
-    pic: string;
-    armor: number;
-    level: number;
-    exp: number;
-    atk1: string;
-    atk2: string;
-    atk3: string;
-    atk1dmg: number;
-    atk2dmg: number;
-    atk3dmg: number;
-    isOnLineup: string;
-};
+import type { UserMobileSuit } from "./types";
 
 export default function TableFormContainer() {
     const [selectedMS, setSelectedMS] = useState<UserMobileSuit | null>(null);

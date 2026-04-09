@@ -17,26 +17,26 @@ export async function getUserMobileSuits() {
     });
     const mobileSuits = userMobileSuits.map((userMobileSuit) => {
         const total = coerceTotalExpFromRow(
-            userMobileSuit.ums_level,
-            userMobileSuit.ums_exp,
+            userMobileSuit.ums_level ?? 1,
+            userMobileSuit.ums_exp ?? 0,
         );
         const { level, progress } = levelAndProgressFromTotal(total);
         return {
-        mid: userMobileSuit.mobile_suits.ms_mid,
-        name: userMobileSuit.mobile_suits.ms_name,
-        pic: userMobileSuit.mobile_suits.ms_pic,
-        armor: userMobileSuit.ums_armor,
+        mid: userMobileSuit.mobile_suits.ms_mid ?? "",
+        name: userMobileSuit.mobile_suits.ms_name ?? "",
+        pic: userMobileSuit.mobile_suits.ms_pic ?? "",
+        armor: userMobileSuit.ums_armor ?? 0,
         level,
         exp: progress,
         totalExp: total,
-        basicAtkdmg: userMobileSuit.ums_basicAtkdmg,
-        atk1: userMobileSuit.mobile_suits.ms_atk1,
-        atk2: userMobileSuit.mobile_suits.ms_atk2,
-        atk3: userMobileSuit.mobile_suits.ms_atk3,
-        atk1dmg: userMobileSuit.mobile_suits.ms_atk1dmg + userMobileSuit.ums_atk1dmg,
-        atk2dmg: userMobileSuit.mobile_suits.ms_atk2dmg + userMobileSuit.ums_atk2dmg,
-        atk3dmg: userMobileSuit.mobile_suits.ms_atk3dmg + userMobileSuit.ums_atk3dmg,
-        isOnLineup: userMobileSuit.ums_onLineup,
+        basicAtkdmg: userMobileSuit.ums_basicAtkdmg ?? 0,
+        atk1: userMobileSuit.mobile_suits.ms_atk1 ?? "",
+        atk2: userMobileSuit.mobile_suits.ms_atk2 ?? "",
+        atk3: userMobileSuit.mobile_suits.ms_atk3 ?? "",
+        atk1dmg: (userMobileSuit.mobile_suits.ms_atk1dmg ?? 0) + (userMobileSuit.ums_atk1dmg ?? 0),
+        atk2dmg: (userMobileSuit.mobile_suits.ms_atk2dmg ?? 0) + (userMobileSuit.ums_atk2dmg ?? 0),
+        atk3dmg: (userMobileSuit.mobile_suits.ms_atk3dmg ?? 0) + (userMobileSuit.ums_atk3dmg ?? 0),
+        isOnLineup: userMobileSuit.ums_onLineup ?? "No",
     };
     });
     return mobileSuits;
