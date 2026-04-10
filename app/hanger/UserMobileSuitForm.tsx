@@ -3,6 +3,7 @@
 import { useState} from "react";
 import { pictureToImageSrc } from "@/lib/pictureToImgSrc";
 import { changeUnit } from "@/app/actions/changeUnit";
+import { newUserChangeUnit } from "@/app/actions/newUserChangeUnit";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -47,19 +48,39 @@ export default function UserMobileSuitForm({
     
     async function handleChangeUnit(ms: UserMobileSuit) {
         const currentMS = document.getElementById("modalChangeUnit")?.getAttribute("data-ms-mid");
-        const result = await changeUnit(currentMS ?? "", ms.mid);
-        if ("success" in result) {
-            toast.success(result.success);
-            onClearSelection();
-            onChangeUnitSuccess?.();
-            document.getElementById("modalChangeUnit")?.classList.remove("flex");
-            document.getElementById("modalChangeUnit")?.classList.remove("justify-start");
-            document.getElementById("modalChangeUnit")?.classList.remove("items-center");
-            document.getElementById("modalChangeUnit")?.classList.remove("flex-col");
-            document.getElementById("modalChangeUnit")?.classList.add("hidden");
+        if (currentMS === "") {
+            // Do Change Unit to Empty Unit
+            const result = await newUserChangeUnit(ms.mid);
+            if ("success" in result) {
+                toast.success(result.success);
+                onClearSelection();
+                onChangeUnitSuccess?.();
+                document.getElementById("modalChangeUnit")?.classList.remove("flex");
+                document.getElementById("modalChangeUnit")?.classList.remove("justify-start");
+                document.getElementById("modalChangeUnit")?.classList.remove("items-center");
+                document.getElementById("modalChangeUnit")?.classList.remove("flex-col");
+                document.getElementById("modalChangeUnit")?.classList.add("hidden");
+            }
+            else {
+                toast.error(result.error);
+            }
         }
         else {
-            toast.error(result.error);
+            // Do Change Unit to Selected Unit
+            const result = await changeUnit(currentMS ?? "", ms.mid);
+            if ("success" in result) {
+                toast.success(result.success);
+                onClearSelection();
+                onChangeUnitSuccess?.();
+                document.getElementById("modalChangeUnit")?.classList.remove("flex");
+                document.getElementById("modalChangeUnit")?.classList.remove("justify-start");
+                document.getElementById("modalChangeUnit")?.classList.remove("items-center");
+                document.getElementById("modalChangeUnit")?.classList.remove("flex-col");
+                document.getElementById("modalChangeUnit")?.classList.add("hidden");
+            }
+            else {
+                toast.error(result.error);
+            }
         }
         router.refresh();
     }

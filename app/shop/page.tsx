@@ -1,8 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { getMSLineUp } from "@/lib/getMSLineUp";
 import { getUserGPoints } from "@/app/actions/getUserGPoints";
-import Image from "next/image";
 import ShopContainer from "./ShopContainer";
 import prisma from "@/lib/prisma";
 const PAGE_SIZE = 10;

@@ -36,6 +36,30 @@ export async function getMSLineUp(userId: number): Promise<MSLineUpUnit[]> {
     orderBy: { ms_id: "asc" },
   });
 
+  if (result.length === 0) {
+    return Array.from({ length: 3 }).map((_, index) => {
+      return {
+        msId: 0,
+        name: `Unit ${index + 1}`,
+        mid: `MS-${index + 1}`,
+        cost: 0,
+        level: 0,
+        exp: 0,
+        totalExp: 0,
+        umsExp: 0,
+        armor: 0,
+        basicAtkdmg: 0,
+        skill1: "",
+        skill2: "",
+        skill3: "",
+        skill1dmg: 0,
+        skill2dmg: 0,
+        skill3dmg: 0,
+        pic: "/images/logo.png",
+      };
+    });
+  }
+
   // Format the result into a more readable format
   const lineup: MSLineUpUnit[] = result.map((item) => {
     const total = coerceTotalExpFromRow(item.ums_level ?? 1, item.ums_exp ?? 0);

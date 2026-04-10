@@ -25,8 +25,8 @@ function getClient(): PrismaClient {
 // are only present at runtime (e.g. Vercel).
 const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = getClient() as any;
-    return client[prop];
+    const client: PrismaClient = getClient();
+    return (client as unknown as Record<PropertyKey, unknown>)[prop] as unknown;
   },
 });
 

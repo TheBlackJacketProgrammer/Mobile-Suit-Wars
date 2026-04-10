@@ -38,9 +38,9 @@ model mobile_suits {
 model user {
   u_id                  Int                     @id @db.SmallInt
   u_name                String?                 @db.VarChar(14)
-  u_account             String?                 @unique @db.VarChar(5)
+  u_account             String?                 @unique @db.VarChar(255)
   u_password            Int?
-  u_email               String?                 @unique @db.VarChar(24)
+  u_email               String?                 @unique @db.VarChar(255)
   u_points              Int?
   u_type                String?                 @db.VarChar(5)
   u_status              String?                 @db.VarChar(3)

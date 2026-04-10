@@ -41,7 +41,8 @@ function MSUnitActionsStats({
 
   useEffect(() => {
     if (actionsDisabled) {
-      setHoveredAction(null);
+      const t = setTimeout(() => setHoveredAction(null), 0);
+      return () => clearTimeout(t);
     }
   }, [actionsDisabled]);
 

@@ -1,6 +1,9 @@
 "use client";
 
 export default function BtnChangeUnit( { ms_mid }: { ms_mid: string } ) {
+    if (ms_mid === "MS-1" || ms_mid === "MS-2" || ms_mid === "MS-3") {
+        ms_mid = "";
+    }
     function handleToggleModal() {
         document.getElementById("modalChangeUnit")?.classList.remove("hidden");
         document.getElementById("modalChangeUnit")?.classList.add("flex");
