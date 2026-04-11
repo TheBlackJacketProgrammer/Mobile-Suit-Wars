@@ -99,6 +99,8 @@ export default function MSContent({
         charges={charges}
         onSelectAction={onSelectAction}
         actionsDisabled={actionsDisabled}
+        unitIndex={idx}
+        benchBannedSet={benchBannedSet}
       />
     </div>
   );
