@@ -91,30 +91,40 @@ export default function MSStats({
           </p>
         ) : (
           <>
-            <div className="flex flex-row justify-between">
-              <span className="text-3-dark">
-                Damage: <b>{preview.damage}</b>
-              </span>
-            </div>
-            <div className="flex flex-row justify-between">
-              <span className="text-3-dark">
-                Left:{" "}
-                <b>
-                  {chargesLeft(charges, hoveredAction)}/
-                  {maxForAction(hoveredAction)}
-                </b>
-              </span>
-            </div>
-            <div className="flex flex-row justify-between">
-              <span className="text-3-dark">
-                Effect: <b>None</b>
-              </span>
-            </div>
-            <div className="flex flex-row justify-between">
-              <span className="text-3-dark">
-                Cooldown: <b>{formatCooldownDisplay(charges, hoveredAction)}</b>
-              </span>
-            </div>
+            {chargesLeft(charges, hoveredAction) === 0 && hoveredAction !== "basic" ? (
+              <div className="flex flex-col gap-2">
+                <div className="text-red-600 font-semibold">
+                  <p className="m-0">Skill Cooldown in {formatCooldownDisplay(charges, hoveredAction)}</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-row justify-between">
+                  <span className="text-3-dark">
+                    Damage: <b>{preview.damage}</b>
+                  </span>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <span className="text-3-dark">
+                    Left:{" "}
+                    <b>
+                      {chargesLeft(charges, hoveredAction)}/
+                      {maxForAction(hoveredAction)}
+                    </b>
+                  </span>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <span className="text-3-dark">
+                    Effect: <b>None</b>
+                  </span>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <span className="text-3-dark">
+                    Cooldown: <b>{formatCooldownDisplay(charges, hoveredAction)}</b>
+                  </span>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

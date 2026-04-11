@@ -22,6 +22,7 @@ import { applyBattleWinRewards } from "../actions/applyBattleWinRewards";
 import { fetchMSLineupForBattle } from "../actions/fetchMSLineupForBattle";
 import BattleLoseModal from "./components/BattleLoseModal";
 import BattleWinSummaryModal from "./components/BattleWinSummaryModal";
+import MSSwitchModal from "./components/MSSwitchModal";
 import { refreshBattleEnemies } from "../actions/refreshBattleEnemies";
 import type { BattleLogEntry, BattleLogPart } from "./battleLog";
 import { buildAttackLogLine, resolveAttackOutcome } from "./battleCritEvade";
@@ -208,6 +209,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   const [enemyUiRemovedSlots, setEnemyUiRemovedSlots] = useState(
     () => new Set<number>(),
   );
+  const [isMSSwitchModalOpen, setIsMSSwitchModalOpen] = useState(false);
   const prevPlayerHPRef = useRef<number[]>(lineup.map((u) => u.armor));
   const prevEnemyHPRef = useRef<number[]>(
     (() => {
@@ -770,10 +772,83 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
           void handleEndBattle();
         }}
       />
+      <MSSwitchModal
+        isOpen={isMSSwitchModalOpen}
+        onClose={() => setIsMSSwitchModalOpen(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        lineupNames={lineupNames}
+        playerHP={playerHP}
+        benchBannedTabIndices={benchBannedTabIndices}
+        uiRemovedSlotIndices={playerUiRemovedSlots}
+        pendingAttack={pendingAttack}
+        lineup={liveLineup}
+        playerCharges={playerCharges}
+        onSelectAction={handleSelectAction}
+        onCancelAttack={() => setPendingAttack(null)}
+        actionsDisabled={false}
+        benchBannedSet={benchBannedSet}
+      />
       <section className="battle-arena-section">
-        <div className="arena-container grid grid-cols-1 lg:grid-cols-3">
+        <div className="arena-info-mobile">
+            <h1 className="text-4xl font-bold text-center text-3-dark m-0 w-full">
+              Turn: {turnCount}
+            </h1>
+            {showBattleStartHeading && (
+              <h2 className="text-2xl font-bold text-center text-3-dark m-0 w-full">
+                Battle Start
+              </h2>
+            )}
+            {battleOutcome === "win" && (
+              <h2 className="text-2xl font-bold text-center text-green-700 m-0">
+                Victory
+              </h2>
+            )}
+            {battleOutcome === "lose" && (
+              <h2 className="text-2xl font-bold text-center text-red-600 m-0">
+                Defeat
+              </h2>
+            )}
+            {battleOutcome === null && isEnemyTurnPending && (
+              <p className="text-center text-3-dark m-0 text-sm italic">
+                Enemy counterattack incoming…
+              </p>
+            )}
+            {battleOutcome === null && !isEnemyTurnPending && pendingAttack && (
+              <div className="flex flex-col gap-2 items-center">
+                <p className="text-center text-amber-700 font-medium m-0 text-sm">
+                  Select an enemy unit to attack.
+                </p>
+                <button
+                  onClick={() => setPendingAttack(null)}
+                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white font-semibold rounded text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+            {battleOutcome === null &&
+              !isEnemyTurnPending &&
+              !pendingAttack &&
+              activeUnitIsBenched && (
+                <p className="text-center text-amber-700 font-medium m-0 text-sm">
+                  Those suits are resting — switch to a Mobile Suit that can act
+                  this turn.
+                </p>
+              )}
+            {battleOutcome === null &&
+              !isEnemyTurnPending &&
+              !pendingAttack &&
+              !activeUnitIsBenched && (
+                <p className="text-center text-3-dark m-0 text-sm">
+                  Your turn: pick Basic Attack or a skill, then choose a
+                  target.
+                </p>
+              )}
+        </div>
+        <div className="arena-container grid grid-cols-2 lg:grid-cols-3 w-full">
           <div className="player-units">
-            <h2 className="text-2xl font-bold text-center text-3-dark mb-2">
+            <h2 className="text-2xl font-bold text-center text-3-dark">
               Player Units
             </h2>
             {[0, 1, 2].map((i) => {
@@ -788,6 +863,11 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
                       if (pendingDestroy) return;
                       if (benchBannedSet.has(i)) return;
                       setActiveTab(`MS${i + 1}` as TabType);
+                      // Open modal on mobile
+                      const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+                      if (!isDesktop) {
+                        setIsMSSwitchModalOpen(true);
+                      }
                     }}
                   >
                     <Image
@@ -926,7 +1006,8 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
         </div>
         <div className="arena-actions">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-            <div className="action-item col-span-1">
+            {/* Desktop View - Show tabs normally */}
+            <div className="action-item col-span-1 hidden lg:block">
               <MSTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -946,6 +1027,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
                 benchBannedSet={benchBannedSet}
               />
             </div>
+
             <div className="enemy-status col-span-1">
               <h3 className="font-bold text-center text-3-dark">Enemy Status</h3>
               {[0, 1, 2].map((i) => {

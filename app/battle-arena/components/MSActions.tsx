@@ -1,8 +1,9 @@
 "use client";
 
 import type { MSLineUpUnit } from "@/lib/getMSLineUp";
-import { canUseAction, type UnitAttackCharges } from "../battleAttackCharges";
+import { canUseAction, formatCooldownDisplay, type UnitAttackCharges } from "../battleAttackCharges";
 import type { MSActionHover } from "../types";
+import { toast } from "react-toastify";
 
 type Props = {
   lineup: MSLineUpUnit;
@@ -29,7 +30,16 @@ export default function MSActions({
   }
 
   function trySelect(action: "basic" | "skill1" | "skill2" | "skill3") {
-    if (locked || !canUseAction(charges, action)) return;
+    if (locked) return;
+    if (!canUseAction(charges, action)) {
+      // Show cooldown message for skills with no charges
+      onHoverAction(action);
+      if (action !== "basic") {
+        const cooldown = formatCooldownDisplay(charges, action);
+        toast.warning(`${action.charAt(0).toUpperCase() + action.slice(1)} Cooldown in ${cooldown}`);
+      }
+      return;
+    }
     onSelectAction(action);
   }
 
@@ -45,7 +55,7 @@ export default function MSActions({
         type="button"
         className={btnClass("basic")}
         disabled={locked}
-        aria-disabled={locked || !canUseAction(charges, "basic")}
+        aria-disabled={locked}
         onMouseEnter={() => {
           if (!locked) onHoverAction("basic");
         }}
@@ -57,7 +67,7 @@ export default function MSActions({
         type="button"
         className={btnClass("skill1")}
         disabled={locked}
-        aria-disabled={locked || !canUseAction(charges, "skill1")}
+        aria-disabled={locked}
         onMouseEnter={() => {
           if (!locked) onHoverAction("skill1");
         }}
@@ -69,7 +79,7 @@ export default function MSActions({
         type="button"
         className={btnClass("skill2")}
         disabled={locked}
-        aria-disabled={locked || !canUseAction(charges, "skill2")}
+        aria-disabled={locked}
         onMouseEnter={() => {
           if (!locked) onHoverAction("skill2");
         }}
@@ -81,7 +91,7 @@ export default function MSActions({
         type="button"
         className={btnClass("skill3")}
         disabled={locked}
-        aria-disabled={locked || !canUseAction(charges, "skill3")}
+        aria-disabled={locked}
         onMouseEnter={() => {
           if (!locked) onHoverAction("skill3");
         }}

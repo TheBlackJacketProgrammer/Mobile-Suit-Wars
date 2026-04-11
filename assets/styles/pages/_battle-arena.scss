@@ -16,6 +16,23 @@ main {
             flex-direction: column;
             gap: 24px;
 
+            .arena-info-mobile {
+                width: 100%;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+                background-color: $white;
+                border-radius: $border-radius-sm;
+                border: 1px solid $border-color;
+
+                @media (min-width: $lg) {
+                    display: none;
+                }
+            }
+
             .arena-container {
                 width: 100%;
                 min-height: 500px;
@@ -110,6 +127,10 @@ main {
                     align-items: center;
                     justify-content: center;
                     gap: 16px;
+
+                    @media (max-width: $md) {
+                        display: none;
+                    }
                 }
 
                 .enemy-units {
