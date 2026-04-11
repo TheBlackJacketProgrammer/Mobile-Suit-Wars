@@ -1,4 +1,5 @@
 import type { TabType } from "../types";
+import type { PendingPlayerAttack } from "../BattleArenaClient";
 
 type Props = {
   activeTab: TabType;
@@ -10,6 +11,8 @@ type Props = {
   benchBannedTabIndices: number[];
   /** Slots already removed from the arena UI after destroy delay. */
   uiRemovedSlotIndices: ReadonlySet<number>;
+  /** Disable tabs when an attack is pending and awaiting target selection. */
+  pendingAttack?: PendingPlayerAttack | null;
 };
 
 const tabs: TabType[] = ["MS1", "MS2", "MS3"];
@@ -21,6 +24,7 @@ export default function MSTabs({
   playerHP,
   benchBannedTabIndices,
   uiRemovedSlotIndices,
+  pendingAttack,
 }: Props) {
   const bannedSet = new Set(benchBannedTabIndices);
 
@@ -32,24 +36,27 @@ export default function MSTabs({
         const destroyedPending =
           playerHP[index]! <= 0 && !uiRemovedSlotIndices.has(index);
         const benched = !destroyedPending && bannedSet.has(index);
+        const isDisabled = benched || destroyedPending || !!pendingAttack;
         return (
           <button
             key={tab}
             type="button"
-            disabled={benched || destroyedPending}
+            disabled={isDisabled}
             title={
               destroyedPending
                 ? "Unit destroyed."
                 : benched
                   ? "This suit is resting — choose another unit for this turn."
-                  : undefined
+                  : pendingAttack
+                    ? "Awaiting target selection — complete or cancel the current action."
+                    : undefined
             }
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 border-r ms-tabs__btn ${
               activeTab === tab
                 ? "bg-white font-bold"
                 : "bg-gray-200 hover:bg-gray-300"
-            }${benched || destroyedPending ? " ms-tabs__btn--blocked" : ""}`}
+            }${isDisabled ? " ms-tabs__btn--blocked" : ""}`}
           >
             <span className="text-3-dark">
               {lineupNames[index] ?? tab}

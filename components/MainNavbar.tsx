@@ -44,11 +44,8 @@ export default function MainNavbar() {
                                 MS Core
                             </Link>
                         ) : null}
-                        <Link href="/about" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>
+                        <Link href="/leaderboard" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>
                             Leaderboard
-                        </Link>
-                        <Link href="/contact" onMouseEnter={() => playHoverSound(HOVER_SOUND)} onClick={() => playSound(BTN_SOUND, { volume: 0.55 })}>
-                            Profile
                         </Link>
                         <button
                             type="button"

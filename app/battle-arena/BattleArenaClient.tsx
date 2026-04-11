@@ -43,6 +43,8 @@ type PendingPlayerAttack = {
   action: MSActionHover;
 };
 
+export type { PendingPlayerAttack };
+
 function tabToIndex(tab: TabType): number {
   if (tab === "MS1") return 0;
   if (tab === "MS2") return 1;
@@ -932,6 +934,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
                 playerHP={playerHP}
                 benchBannedTabIndices={benchBannedTabIndices}
                 uiRemovedSlotIndices={playerUiRemovedSlots}
+                pendingAttack={pendingAttack}
               />
               <MSTabContents
                 activeTab={activeTab}
