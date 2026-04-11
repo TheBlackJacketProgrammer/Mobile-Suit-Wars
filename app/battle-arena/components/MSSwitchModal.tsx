@@ -5,7 +5,7 @@ import type { PendingPlayerAttack } from "../BattleArenaClient";
 import type { TabType } from "../types";
 import MSTabs from "./MSTabs";
 import MSTabContents from "./MSTabContents";
-import type { AttackCharges } from "../battleAttackCharges";
+import type { UnitAttackCharges } from "../battleAttackCharges";
 
 type Props = {
   isOpen: boolean;
@@ -18,7 +18,7 @@ type Props = {
   uiRemovedSlotIndices: ReadonlySet<number>;
   pendingAttack?: PendingPlayerAttack | null;
   lineup: MSLineUpUnit[];
-  playerCharges: AttackCharges[];
+  playerCharges: UnitAttackCharges[];
   onSelectAction: (action: any) => void;
   onCancelAttack: () => void;
   actionsDisabled: boolean;
