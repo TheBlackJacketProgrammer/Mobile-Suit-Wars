@@ -13,6 +13,7 @@ type Props = {
   hoveredAction: MSActionHover | null;
   currentArmor: number;
   charges: UnitAttackCharges;
+  isBenched?: boolean;
 };
 
 function resolveAction(
@@ -26,13 +27,53 @@ function resolveAction(
   };
 }
 
+function getStatusDisplay(
+  currentArmor: number,
+  maxArmor: number,
+  isBenched: boolean,
+): { status: string; textColor: string; bgColor: string } {
+  if (isBenched) {
+    return { status: "Benched", textColor: "text-amber-600", bgColor: "bg-amber-50" };
+  }
+
+  const hpPercentage = Math.max(0, (currentArmor / maxArmor) * 100);
+
+  if (hpPercentage > 60) {
+    return {
+      status: "Active",
+      textColor: "text-green-700",
+      bgColor: "bg-green-50",
+    };
+  } else if (hpPercentage > 50) {
+    return {
+      status: "Damaged",
+      textColor: "text-amber-600",
+      bgColor: "bg-amber-50",
+    };
+  } else if (hpPercentage > 0) {
+    return {
+      status: "Overheating",
+      textColor: "text-red-600",
+      bgColor: "bg-red-50",
+    };
+  } else {
+    return {
+      status: "Destroyed",
+      textColor: "text-red-700",
+      bgColor: "bg-red-100",
+    };
+  }
+}
+
 export default function MSStats({
   lineup,
   hoveredAction,
   currentArmor,
   charges,
+  isBenched = false,
 }: Props) {
   const preview = resolveAction(lineup, hoveredAction);
+  const statusDisplay = getStatusDisplay(currentArmor, lineup.armor, isBenched);
 
   return (
     <div className="flex flex-col gap-2">
@@ -78,9 +119,11 @@ export default function MSStats({
         )}
       </div>
 
-      <div className="border p-3 bg-gray-100 shadow text-center">
+      <div className={`border p-3 ${statusDisplay.bgColor} shadow text-center`}>
         <span className="text-3-dark">Status: </span>
-        <span className="text-green-700 font-bold">Normal</span>
+        <span className={`${statusDisplay.textColor} font-bold`}>
+          {statusDisplay.status}
+        </span>
       </div>
     </div>
   );

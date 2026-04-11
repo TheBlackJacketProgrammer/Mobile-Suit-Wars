@@ -781,7 +781,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
               return (
                 <div key={i} className="contents">
                   <div
-                    className={`image-container player-${i + 1} ${pendingDestroy ? "opacity-40 grayscale pointer-events-none" : ""} ${!pendingDestroy && benchBannedSet.has(i) ? "battle-arena-player-benched" : ""} ${playerHitFlashIndex === i ? "battle-arena-player-hit" : ""} ${playerEvadeFlashIndex === i ? "battle-arena-player-evade" : ""}`}
+                    className={`image-container player-${i + 1} ${pendingDestroy ? "opacity-40 grayscale pointer-events-none" : ""} ${!pendingDestroy && benchBannedSet.has(i) ? "battle-arena-player-benched" : ""} ${i === activeUnitIndex ? "battle-arena-player-active" : ""} ${playerHitFlashIndex === i ? "battle-arena-player-hit" : ""} ${playerEvadeFlashIndex === i ? "battle-arena-player-evade" : ""}`}
                     onClick={() => {
                       if (pendingDestroy) return;
                       if (benchBannedSet.has(i)) return;
@@ -832,9 +832,17 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
               </p>
             )}
             {battleOutcome === null && !isEnemyTurnPending && pendingAttack && (
-              <p className="text-center text-amber-700 font-medium m-0 text-sm">
-                Select an enemy unit to attack.
-              </p>
+              <div className="flex flex-col gap-2 items-center">
+                <p className="text-center text-amber-700 font-medium m-0 text-sm">
+                  Select an enemy unit to attack.
+                </p>
+                <button
+                  onClick={() => setPendingAttack(null)}
+                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white font-semibold rounded text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
             )}
             {battleOutcome === null &&
               !isEnemyTurnPending &&
@@ -881,7 +889,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
                         ? 0
                         : undefined
                     }
-                    className={`image-container enemy-${i + 1} ${pendingDestroy ? "opacity-40 grayscale pointer-events-none" : ""} ${enemyHitFlashIndex === i ? "battle-arena-enemy-hit" : ""} ${enemyEvadeFlashIndex === i ? "battle-arena-enemy-evade" : ""} ${pendingAttack && !isEnemyTurnPending && !pendingDestroy ? "cursor-pointer ring-2 ring-amber-500 ring-offset-2 rounded" : ""}`}
+                    className={`image-container enemy-${i + 1} ${pendingDestroy ? "opacity-40 grayscale pointer-events-none" : ""} ${enemyHitFlashIndex === i ? "battle-arena-enemy-hit" : ""} ${enemyEvadeFlashIndex === i ? "battle-arena-enemy-evade" : ""} ${pendingAttack && !isEnemyTurnPending && !pendingDestroy ? "battle-arena-enemy-targeting" : ""}`}
                     onClick={() => {
                       if (pendingDestroy || isEnemyTurnPending) return;
                       handleEnemyClick(i);
@@ -932,6 +940,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
                 playerCharges={playerCharges}
                 onSelectAction={handleSelectAction}
                 actionsDisabled={actionsDisabled}
+                benchBannedSet={benchBannedSet}
               />
             </div>
             <div className="enemy-status col-span-1">

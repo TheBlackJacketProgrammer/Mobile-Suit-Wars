@@ -16,6 +16,7 @@ type Props = {
   playerCharges: UnitAttackCharges[];
   onSelectAction: (action: MSActionHover) => void;
   actionsDisabled: boolean;
+  benchBannedSet?: Set<number>;
 };
 
 function tabToIndex(tab: TabType): number {
@@ -30,12 +31,16 @@ function MSUnitActionsStats({
   charges,
   onSelectAction,
   actionsDisabled,
+  unitIndex,
+  benchBannedSet,
 }: {
   unit: MSLineUpUnit;
   currentArmor: number;
   charges: UnitAttackCharges;
   onSelectAction: (action: MSActionHover) => void;
   actionsDisabled: boolean;
+  unitIndex: number;
+  benchBannedSet?: Set<number>;
 }) {
   const [hoveredAction, setHoveredAction] = useState<MSActionHover | null>(null);
 
@@ -60,6 +65,7 @@ function MSUnitActionsStats({
         hoveredAction={hoveredAction}
         currentArmor={currentArmor}
         charges={charges}
+        isBenched={benchBannedSet?.has(unitIndex)}
       />
     </div>
   );
@@ -78,6 +84,7 @@ export default function MSContent({
   playerCharges,
   onSelectAction,
   actionsDisabled,
+  benchBannedSet,
 }: Props) {
   const idx = tabToIndex(activeTab);
   const currentArmor = playerHP[idx] ?? 0;

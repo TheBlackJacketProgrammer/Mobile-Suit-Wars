@@ -51,7 +51,10 @@ export default function MSTabs({
                 : "bg-gray-200 hover:bg-gray-300"
             }${benched || destroyedPending ? " ms-tabs__btn--blocked" : ""}`}
           >
-            <span className="text-3-dark">{lineupNames[index] ?? tab}</span>
+            <span className="text-3-dark">
+              {lineupNames[index] ?? tab}
+              {benched && <span className="text-3-dark font-semibold"> - Benched</span>}
+            </span>
           </button>
         );
       })}
