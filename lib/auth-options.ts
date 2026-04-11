@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const username = credentials?.username?.trim();
-        const password = credentials?.password;
+        const password = credentials?.password.trim();
         if (!username || !password) return null;
 
         const prisma = (await import("@/lib/prisma")).default;
@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
         });
         if (!user) return null;
 
-        const valid = await verifyPassword(password, String(user.u_password ?? ""));
+        const valid = await verifyPassword(password, user.u_password ?? "" );
         if (!valid) return null;
 
         return {

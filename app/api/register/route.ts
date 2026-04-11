@@ -27,15 +27,7 @@ export async function POST(req: Request) {
   if (username.length > 255) return jsonError("Username must be at most 255 characters.");
   if (email.length > 255) return jsonError("Email must be at most 255 characters.");
 
-  // Current DB column is integer; keep compatibility with existing login.
-  if (!/^\d+$/.test(password)) {
-    return jsonError("Password must be numeric.");
-  }
-
-  const passwordInt = Number(password);
-  if (!Number.isSafeInteger(passwordInt)) {
-    return jsonError("Invalid password.");
-  }
+ 
 
   const prisma = (await import("@/lib/prisma")).default;
 
@@ -49,7 +41,7 @@ export async function POST(req: Request) {
         u_name: name,
         u_account: username,
         u_email: email,
-        u_password: passwordInt,
+        u_password: password,
         u_points: 10000,
         u_type: "User",
         u_status: "New",
