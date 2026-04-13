@@ -16,7 +16,7 @@ export default function ShopLayout({
     <>
       <BackgroundMusic src="/sounds/bgm-shop.mp3" />
       <MainNavbar />
-      <main className="dashboard-container">{children}</main>
+      <main className="main-shop-container">{children}</main>
     </>
   );
 }

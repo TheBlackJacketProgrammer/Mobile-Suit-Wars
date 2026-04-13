@@ -1,8 +1,28 @@
+ .main-shop-container {
+    margin-top: $header-height;
+    padding: 40px;
+
+    background: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.5) 100%
+          ),
+    url("/images/bg-main.jpg") lightgray 50% / cover no-repeat;
+
+    @media (width <= $md) {
+        padding: 0px;
+    }
+}
+
 .shop-section {
     // background-color: $white;
     padding: 40px;
     border-radius: $border-radius-xl;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+    @media (width <= $md) {
+        padding: 0px;
+    }
 
     .p-base {
         font-size: 14px;
@@ -50,9 +70,9 @@
                 width: 100%;
                 border-collapse: collapse;
     
-                @media (width <= $md) {
-                    display: none;
-                }
+                // @media (width <= $md) {
+                //     display: none;
+                // }
     
                 thead {
                     border-bottom: 1px solid $border-color;
@@ -65,6 +85,10 @@
                             // text-align: left;
                             padding: 8px 4px !important;
                         }
+                    }
+
+                    #col-msid {
+                        display: none;
                     }
                 }
     
@@ -94,6 +118,10 @@
                                     color: $white;
                                 }
                             }
+                        }
+                        
+                        #row-msid {
+                            display: none;
                         }
                     }
                 }

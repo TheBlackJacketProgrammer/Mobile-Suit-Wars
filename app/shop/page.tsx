@@ -42,7 +42,7 @@ export default async function Shop({searchParams}: {searchParams: ShopSearchPara
           <label htmlFor="G-Points" className="text-3-dark">G-Points</label>
           <input type="number" id="G-Points" name="G-Points" className="txtbox-gpoints" readOnly value={gPoints} />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-start mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-start mt-4 w-full">
           <ShopContainer mobileSuits={mobileSuits} page={page} total={total} />
         </div>
       </div>

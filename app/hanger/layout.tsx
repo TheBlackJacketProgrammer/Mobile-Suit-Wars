@@ -18,7 +18,7 @@ export default function HangerLayout({
     <>
       <BackgroundMusic src="/sounds/bgm-hanger.mp3" />
       <MainNavbar />
-      <main className="dashboard-container">{children}</main>
+      <main className="main-hanger-container">{children}</main>
       <ModalChangeUnit />
     </>
   );

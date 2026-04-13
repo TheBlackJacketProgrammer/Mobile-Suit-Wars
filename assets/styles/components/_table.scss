@@ -8,9 +8,9 @@
         width: 100%;
         border-collapse: collapse;
 
-        @media (width <= $md) {
-            display: none;
-        }
+        // @media (width <= $md) {
+        //     display: none;
+        // }
 
         thead {
             border-bottom: 1px solid $border-color;

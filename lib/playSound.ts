@@ -1,3 +1,5 @@
+import { getGlobalMuteState } from "@/contexts/SoundContext";
+
 /**
  * Play a short sound (e.g. button click). Call from a click/tap handler so
  * the browser treats it as a user gesture. Paths are under `public/`, e.g.
@@ -7,6 +9,11 @@ export function playSound(
   src: string,
   options?: { volume?: number }
 ): void {
+  // Don't play if globally muted
+  if (getGlobalMuteState()) {
+    return;
+  }
+
   const audio = new Audio(src);
   audio.volume = Math.min(1, Math.max(0, options?.volume ?? 0.65));
   void audio.play().catch(() => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useSoundContext } from "@/contexts/SoundContext";
 
 /** Imperative hooks for pages that need to pause/restart looped BGM (e.g. battle stingers). */
 export type ExternalBgmControls = {
@@ -28,9 +29,32 @@ export default function BackgroundMusic({
   autoPlay = true,
   registerExternalControls,
 }: Props) {
+  const { isMuted, toggleMute } = useSoundContext();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const userPausedRef = useRef(false);
+  const wasPausedDueToMuteRef = useRef(false);
+
+  // Handle global mute state
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+
+    if (isMuted && !el.paused) {
+      // Pause audio when muted
+      el.pause();
+      wasPausedDueToMuteRef.current = true;
+      setPlaying(false);
+    } else if (!isMuted && wasPausedDueToMuteRef.current && !userPausedRef.current) {
+      // Resume audio when unmuted (if not manually paused)
+      el.volume = volume;
+      void el
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
+      wasPausedDueToMuteRef.current = false;
+    }
+  }, [isMuted, volume]);
 
   useLayoutEffect(() => {
     const el = audioRef.current;
@@ -49,24 +73,31 @@ export default function BackgroundMusic({
       };
     }
 
-    if (!userPausedRef.current) {
-      void el
-        .play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false));
+    // Don't play if muted
+    if (isMuted || userPausedRef.current) {
+      return () => {
+        el.pause();
+        el.currentTime = 0;
+      };
     }
+
+    void el
+      .play()
+      .then(() => setPlaying(true))
+      .catch(() => setPlaying(false));
 
     return () => {
       el.pause();
       el.currentTime = 0;
     };
-  }, [autoPlay, src]);
+  }, [autoPlay, src, isMuted]);
 
   useEffect(() => {
     if (!autoPlay) return;
 
     const onGesture = () => {
-      if (userPausedRef.current) return;
+      // Don't play if muted or user manually paused
+      if (isMuted || userPausedRef.current) return;
       const el = audioRef.current;
       if (!el || !el.paused) return;
       el.volume = volume;
@@ -82,7 +113,7 @@ export default function BackgroundMusic({
       window.removeEventListener("pointerdown", onGesture, true);
       window.removeEventListener("keydown", onGesture, true);
     };
-  }, [autoPlay, volume, src]);
+  }, [autoPlay, volume, src, isMuted]);
 
   useEffect(() => {
     const el = audioRef.current;
@@ -132,6 +163,10 @@ export default function BackgroundMusic({
       .catch(() => setPlaying(false));
   }, [playing, volume]);
 
+  const handleMuteClick = useCallback(() => {
+    toggleMute();
+  }, [toggleMute]);
+
   return (
     <>
       <audio
@@ -143,12 +178,12 @@ export default function BackgroundMusic({
       />
       <button
         type="button"
-        onClick={toggle}
+        onClick={handleMuteClick}
         className="fixed bottom-4 right-4 z-50 rounded-full bg-neutral-800/90 px-3 py-2 text-sm text-white shadow-md hover:bg-neutral-700/90"
-        aria-pressed={playing}
-        aria-label={playing ? "Pause background music" : "Play background music"}
+        aria-label={isMuted ? "Unmute all sounds" : "Mute all sounds"}
+        title={isMuted ? "Unmute all sounds" : "Mute all sounds"}
       >
-        {playing ? "Mute BGM" : "Play BGM"}
+        {isMuted ? "🔇 Unmute" : "🔊 Mute"}
       </button>
     </>
   );

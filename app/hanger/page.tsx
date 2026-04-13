@@ -15,8 +15,8 @@ export default async function Hanger() {
     <section className="full-bleed hanger-section">
       <div className="hanger-container">
         {data.map((item) => (
-          <div key={item.mid} className="hanger-item">
-            <div className="flex flex-col gap-2">
+          <div key={item.mid} className="hanger-item grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-2 items-center justify-center">
               <div className="hanger-item-image-container">
                 <div className="hanger-item-image">
                   <Image src={item.pic} alt={item.name} width={100} height={100} />
@@ -25,7 +25,7 @@ export default async function Hanger() {
               <BtnChangeUnit ms_mid={item.mid} />
             </div>
             
-            <div className="hanger-item-information">
+            <div className="hanger-item-information col-span-2">
               <h4 className="hanger-item-information-title">{item.name}</h4>
               <div className="grid grid-cols-4 gap-2 w-full mb-4">
                 <div>
