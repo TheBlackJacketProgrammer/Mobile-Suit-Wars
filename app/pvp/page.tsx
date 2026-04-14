@@ -10,12 +10,14 @@ import { useRouter } from "next/navigation";
 export default function PvP() {
     const router = useRouter();
     const [username, setUsername] = useState("");
+    const [loading, setLoading] = useState(false);
     const handleSearch = async () => {
+        if (loading) return;
         if (!username || username.trim() === "") {
             toast.error(`Please enter a username to search.`);
             return;
         }
-
+        setLoading(true);
         try {
             const result = await searchUsername(username);
             if (result) {
@@ -24,6 +26,7 @@ export default function PvP() {
             } 
             else {
                 toast.error(`User "${username}" not found.`);
+                setLoading(false);
             }
         } 
         catch (err) {
@@ -41,11 +44,11 @@ export default function PvP() {
                     </div>
                     <div className="card-body flex flex-col items-center justify-center gap-4">
                         <div className="w-full flex items-center justify-center">
-                            <input type="text" id="search_username" className="txt-search" placeholder="Input Username here. . . " value={username} onChange={(e) => setUsername(e.target.value)}    />
+                            <input type="text" id="search_username" className="txt-search" placeholder="Input Username here. . . " value={username} onChange={(e) => setUsername(e.target.value)} disabled={loading}/>
                         </div>
                         <div className="w-full lg:w-auto">
-                            <button className="btn btn-primary w-full lg:w-auto" onClick={() => { void handleSearch(); }}>
-                                Search
+                            <button className="btn btn-primary w-full lg:w-auto" onClick={() => { void handleSearch(); }} disabled={loading}>
+                                {loading ? "Searching..." : "Search"}
                             </button>
                         </div>
                     </div>
