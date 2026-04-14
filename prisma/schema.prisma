@@ -45,6 +45,7 @@ model user {
   u_type                String?                 @db.VarChar(5)
   u_status              String?                 @db.VarChar(3)
   user_has_mobile_suits user_has_mobile_suits[]
+  user_leaderboard      user_leaderboard[]
 }
 
 model user_has_mobile_suits {
@@ -62,4 +63,13 @@ model user_has_mobile_suits {
   user            user         @relation(fields: [u_id], references: [u_id])
 
   @@id([u_id, ms_id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_leaderboard {
+  id         BigInt  @id @default(autoincrement())
+  win_count  BigInt? @default(0)
+  lose_count BigInt? @default(0)
+  u_id       Int     @db.SmallInt
+  user       user    @relation(fields: [u_id], references: [u_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 }

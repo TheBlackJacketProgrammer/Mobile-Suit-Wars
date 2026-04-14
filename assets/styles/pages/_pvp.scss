@@ -1,0 +1,51 @@
+.pvp-container {
+    background-color: $text-9;
+    height: 100vh;
+    width: 100%;
+    margin-top: $header-height;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    h1 {
+        @include h1;
+        color: $white;
+    }
+
+    p {
+        color: $white;
+    }
+
+    .search-player-card {
+        width: 100%;
+        max-width: $max-width-container-sm;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-sm;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        @media (max-width: $md) {
+            max-width: 100%;
+        }
+
+        .card-header {
+            background-color: $blue-4;
+            padding: 16px;
+        }
+
+        .card-body {
+            padding: 16px;
+            background-color: $white;
+
+            .txt-search {
+                border: 1px solid $border-color;
+                color: $text-3-mid;
+                padding: 8px 12px;
+                @media (max-width: $md) {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

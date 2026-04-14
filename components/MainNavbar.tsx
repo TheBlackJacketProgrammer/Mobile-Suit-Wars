@@ -97,6 +97,13 @@ export default function MainNavbar() {
                             </Link>
                         ) : null}
                         <Link 
+                            href="/pvp" 
+                            onMouseEnter={() => playHoverSound(HOVER_SOUND)} 
+                            onClick={() => handleNavClick()}
+                        >
+                            PvP
+                        </Link>
+                        <Link 
                             href="/leaderboard" 
                             onMouseEnter={() => playHoverSound(HOVER_SOUND)} 
                             onClick={() => handleNavClick()}
