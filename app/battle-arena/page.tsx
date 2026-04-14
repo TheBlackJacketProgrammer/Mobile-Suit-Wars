@@ -36,6 +36,7 @@ export default async function BattleArena() {
           ? Number(userId)
           : null
       }
+      enemyName={enemyId ? `${enemyId}'s Units` : "Enemy AI's Units"}
     />
   );
 }

@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { MSLineUpUnit } from "@/lib/getMSLineUp";
 import { getActionLabel, getDamageForAction } from "./battleDamage";
+import { clearPvpEnemy } from "../actions/clearPvpEnemy";
+import {updateUserWinLoseCount} from "../actions/updateUserWinLoseCount";
 import HPBar from "./components/HPBar";
 import MSTabs from "./components/MSTabs";
 import MSTabContents from "./components/MSTabContents";
@@ -37,6 +39,7 @@ type Props = {
   lineup: MSLineUpUnit[];
   enemyMS: mobile_suits[];
   userId: number | null;
+  enemyName : string | null;
 };
 
 type PendingPlayerAttack = {
@@ -146,9 +149,10 @@ function ActionLogLine({ entry }: { entry: BattleLogEntry }) {
   );
 }
 
-export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
+export default function BattleArenaClient({ lineup, enemyMS, userId, enemyName }: Props) {
   const bgmControlsRef = useBattleArenaBgmControlsRef();
   const [liveLineup, setLiveLineup] = useState<MSLineUpUnit[]>(lineup);
+  const [enemyAcc, setEnemyName] = useState<string | null>(enemyName);
 
   useEffect(() => {
     setLiveLineup(lineup);
@@ -217,31 +221,20 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       return enemyMS.map((u) => scaleEnemyArmorForLineup(u.ms_armor ?? 0, avg));
     })(),
   );
-  const playerDestroyUiTimersRef = useRef<
-    Map<number, ReturnType<typeof setTimeout>>
-  >(new Map());
-  const enemyDestroyUiTimersRef = useRef<
-    Map<number, ReturnType<typeof setTimeout>>
-  >(new Map());
+  const playerDestroyUiTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const enemyDestroyUiTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const hitFlashClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const playerEvadeClearRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const enemyEvadeClearRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const enemyCounterDelayRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const playerEvadeClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const enemyEvadeClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const enemyCounterDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const boomAudioRef = useRef<HTMLAudioElement | null>(null);
   const winnerAudioRef = useRef<HTMLAudioElement | null>(null);
   const loseAudioRef = useRef<HTMLAudioElement | null>(null);
   const outcomeStingerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const actionLogsScrollRef = useRef<HTMLDivElement | null>(null);
   const winRewardsAppliedRef = useRef(false);
-  const [winSummaryData, setWinSummaryData] =
-    useState<ApplyBattleWinSuccess | null>(null);
-
+  const [winSummaryData, setWinSummaryData] = useState<ApplyBattleWinSuccess | null>(null);
+  const isPvPRef = useRef(!!enemyName);
   function clearOutcomeStinger() {
     if (outcomeStingerRef.current != null) {
       clearTimeout(outcomeStingerRef.current);
@@ -315,6 +308,14 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
   }, []);
 
   useEffect(() => {
+    if (battleOutcome === "lose") {
+      void clearPvpEnemy();
+      isPvPRef.current = false;
+      // setEnemyName("Enemy AI's Units");
+    }
+  }, [battleOutcome]);
+
+  useEffect(() => {
     if (battleOutcome !== "win" || userId == null) return;
     if (winRewardsAppliedRef.current) return;
 
@@ -335,11 +336,15 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
           ...prev,
           `Victory rewards applied — G-points ${res.gPointsBefore} + ${res.gPointsRewarded} = ${res.gPointsAfter}.`,
         ]);
-      } else {
+      } 
+      else {
         toast.error(res.error);
         winRewardsAppliedRef.current = false;
       }
     });
+
+    // Update user leaderboard score
+
   }, [battleOutcome, userId, turnCount, playerHP, liveLineup]);
 
   useEffect(() => {
@@ -473,13 +478,19 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       outcomeStingerRef.current = null;
       if (kind === "win") {
         playWinnerSound();
-      } else {
+      } 
+      else {
         playLoseSound();
       }
     }, OUTCOME_STINGER_DELAY_MS);
   }
 
   async function handleEndBattle() {
+    // Clear session data of the enemy if it is PvP
+    await clearPvpEnemy(); 
+    isPvPRef.current = false;
+    setEnemyName("Enemy AI's Units");
+
     if (endBattleBusy) return;
 
     clearOutcomeStinger();
@@ -511,13 +522,15 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     enemyDestroyUiTimersRef.current.clear();
 
     setEndBattleBusy(true);
+
     try {
       const nextEnemies = await refreshBattleEnemies();
       let nextLineup = liveLineup;
       try {
         const fetched = await fetchMSLineupForBattle();
         if (fetched.length > 0) nextLineup = fetched;
-      } catch {
+      } 
+      catch {
         /* keep previous liveLineup */
       }
       setLiveLineup(nextLineup);
@@ -552,12 +565,14 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
       setTurnCount(1);
       winRewardsAppliedRef.current = false;
       setWinSummaryData(null);
-    } catch {
+    } 
+    catch {
       setLogLines((prev) => [
         ...prev,
         "Could not load new enemies. Please try again.",
       ]);
-    } finally {
+    } 
+    finally {
       setEndBattleBusy(false);
     }
   }
@@ -674,6 +689,9 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
 
     if (allEnemiesDown) {
       setBattleOutcome("win");
+      if (isPvPRef.current) {
+        updateUserWinLoseCount({ win: true });
+      }
       pauseBattleBgm();
       scheduleOutcomeStinger("win");
       setLogLines((prev) => [...prev, "All enemy units defeated. Victory!"]);
@@ -687,7 +705,8 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
     setIsEnemyTurnPending(true);
     if (outcome.evaded) {
       flashEnemyEvade(enemyIndex);
-    } else {
+    } 
+    else {
       setEnemyHitFlashIndex(enemyIndex);
     }
 
@@ -745,6 +764,9 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
 
       if (counter.newPlayerHP.every((hp) => hp <= 0)) {
         setBattleOutcome("lose");
+        if (isPvPRef.current) {
+          updateUserWinLoseCount({ win: true });
+        }
         pauseBattleBgm();
         scheduleOutcomeStinger("lose");
         setLogLines((prev) => [...prev, "All your units were defeated."]);
@@ -841,15 +863,15 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
               !pendingAttack &&
               !activeUnitIsBenched && (
                 <p className="text-center text-3-dark m-0 text-sm">
-                  Your turn: pick Basic Attack or a skill, then choose a
-                  target.
+                  <strong>Your Turn:</strong> Select a skill or basic attack, then choose a 
+                  <span className="primary"><strong> TARGET</strong></span>.
                 </p>
               )}
         </div>
         <div className="arena-container grid grid-cols-2 lg:grid-cols-3 w-full">
           <div className="player-units">
             <h2 className="text-2xl font-bold text-center text-3-dark">
-              Player Units
+              Your Units
             </h2>
             {[0, 1, 2].map((i) => {
               const pendingDestroy =
@@ -931,7 +953,7 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
               !pendingAttack &&
               activeUnitIsBenched && (
                 <p className="text-center text-amber-700 font-medium m-0 text-sm">
-                  Those suits are resting — switch to a Mobile Suit that can act
+                  Those suits are recharging — switch to a Mobile Suit that can act
                   this turn.
                 </p>
               )}
@@ -940,14 +962,14 @@ export default function BattleArenaClient({ lineup, enemyMS, userId }: Props) {
               !pendingAttack &&
               !activeUnitIsBenched && (
                 <p className="text-center text-3-dark m-0 text-sm">
-                  Your turn: pick Basic Attack or a skill, then choose a
-                  target.
+                  <strong>Your Turn:</strong> Select a skill or basic attack, then choose a 
+                  <span className="primary"><strong> TARGET</strong></span>.
                 </p>
               )}
           </div>
           <div className="enemy-units">
             <h2 className="text-2xl font-bold text-center text-3-dark">
-              Enemy Units
+              {enemyAcc}
             </h2>
             {[0, 1, 2].map((i) => {
               const pendingDestroy =

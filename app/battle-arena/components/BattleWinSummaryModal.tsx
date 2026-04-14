@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import type { ApplyBattleWinSuccess } from "../../actions/applyBattleWinRewards";
-import {
-  ARMOR_BONUS_PER_LEVEL_UP,
-  DAMAGE_BONUS_PER_LEVEL_UP,
-} from "@/lib/battleWinRewards";
+import { ARMOR_BONUS_PER_LEVEL_UP, DAMAGE_BONUS_PER_LEVEL_UP } from "@/lib/battleWinRewards";
 
 type Props = {
   open: boolean;
@@ -14,14 +11,8 @@ type Props = {
   okDisabled?: boolean;
 };
 
-export default function BattleWinSummaryModal({
-  open,
-  data,
-  onOk,
-  okDisabled = false,
-}: Props) {
+export default function BattleWinSummaryModal({open, data, onOk, okDisabled = false}: Props) {
   if (!open || !data) return null;
-
   return (
     <div
       className="battle-win-summary-overlay"
