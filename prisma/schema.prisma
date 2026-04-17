@@ -14,38 +14,45 @@ model event_logs {
 }
 
 model mobile_suits {
-  ms_id                 Int                     @id @db.SmallInt
-  ms_mid                String?                 @db.VarChar(14)
-  ms_name               String?                 @db.VarChar(30)
-  ms_pic                String?                 @db.VarChar(90)
-  ms_cost               Int?
-  ms_armor              Int?
-  ms_level              Int?                    @db.SmallInt
-  ms_exp                Int?                    @db.SmallInt
-  ms_atk1               String?                 @db.VarChar(31)
-  ms_atk2               String?                 @db.VarChar(28)
-  ms_atk3               String?                 @db.VarChar(28)
-  ms_basicAtkdmg        Int?                    @db.SmallInt
-  ms_atk1dmg            Int?                    @db.SmallInt
-  ms_atk2dmg            Int?
-  ms_atk3dmg            Int?
-  ms_atk1Eff            String?                 @db.VarChar(9)
-  ms_atk2Eff            String?                 @db.VarChar(9)
-  ms_atk3Eff            String?                 @db.VarChar(9)
-  user_has_mobile_suits user_has_mobile_suits[]
+  ms_id                  Int                      @id @db.SmallInt
+  ms_mid                 String?                  @db.VarChar(14)
+  ms_name                String?                  @db.VarChar(30)
+  ms_pic                 String?                  @db.VarChar(90)
+  ms_cost                Int?
+  ms_armor               Int?
+  ms_level               Int?                     @db.SmallInt
+  ms_exp                 Int?                     @db.SmallInt
+  ms_atk1                String?                  @db.VarChar(31)
+  ms_atk2                String?                  @db.VarChar(28)
+  ms_atk3                String?                  @db.VarChar(28)
+  ms_basicAtkdmg         Int?                     @db.SmallInt
+  ms_atk1dmg             Int?                     @db.SmallInt
+  ms_atk2dmg             Int?
+  ms_atk3dmg             Int?
+  ms_atk1Eff             String?                  @db.VarChar(9)
+  ms_atk2Eff             String?                  @db.VarChar(9)
+  ms_atk3Eff             String?                  @db.VarChar(9)
+  enemy_team_mobile_suit enemy_team_mobile_suit[]
+  user_has_mobile_suits  user_has_mobile_suits[]
 }
 
 model user {
-  u_id                  Int                     @id @db.SmallInt
-  u_name                String?                 @db.VarChar(14)
-  u_account             String?                 @unique @db.VarChar(255)
-  u_password            String?
-  u_email               String?                 @unique @db.VarChar(255)
-  u_points              Int?
-  u_type                String?                 @db.VarChar(5)
-  u_status              String?                 @db.VarChar(3)
-  user_has_mobile_suits user_has_mobile_suits[]
-  user_leaderboard      user_leaderboard?
+  u_id                                                   Int                     @id @db.SmallInt
+  u_name                                                 String?                 @db.VarChar(14)
+  u_account                                              String?                 @unique @db.VarChar(255)
+  u_password                                             String?
+  u_email                                                String?                 @unique @db.VarChar(255)
+  u_points                                               Int?
+  u_type                                                 String?                 @db.VarChar(5)
+  u_status                                               String?                 @db.VarChar(3)
+  u_lvl                                                  Int?                    @default(1)
+  u_exp                                                  Int?                    @default(0)
+  u_rank                                                 BigInt?                 @default(1)
+  battle_sessions_battle_sessions_opponent_user_idTouser battle_sessions[]       @relation("battle_sessions_opponent_user_idTouser")
+  battle_sessions_battle_sessions_user_idTouser          battle_sessions[]       @relation("battle_sessions_user_idTouser")
+  rank                                                   rank?                   @relation(fields: [u_rank], references: [id], onDelete: Cascade)
+  user_has_mobile_suits                                  user_has_mobile_suits[]
+  user_leaderboard                                       user_leaderboard?
 }
 
 model user_has_mobile_suits {
@@ -72,4 +79,53 @@ model user_leaderboard {
   lose_count BigInt? @default(0)
   u_id       Int     @unique @db.SmallInt
   user       user    @relation(fields: [u_id], references: [u_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+}
+
+model battle_sessions {
+  id                                          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                                     Int           @db.SmallInt
+  opponent_user_id                            Int?          @db.SmallInt
+  enemy_team_id                               Int?
+  mode                                        battle_mode
+  status                                      battle_status @default(active)
+  created_at                                  DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at                                  DateTime?     @default(now()) @db.Timestamp(6)
+  enemy_team                                  enemy_team?   @relation(fields: [enemy_team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_battle_sessions_opponent_user_idTouser user?         @relation("battle_sessions_opponent_user_idTouser", fields: [opponent_user_id], references: [u_id], onDelete: NoAction, onUpdate: NoAction)
+  user_battle_sessions_user_idTouser          user          @relation("battle_sessions_user_idTouser", fields: [user_id], references: [u_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model enemy_team {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  battle_sessions        battle_sessions[]
+  enemy_team_mobile_suit enemy_team_mobile_suit[]
+}
+
+model enemy_team_mobile_suit {
+  team_id      Int
+  ms_id        Int
+  mobile_suits mobile_suits @relation(fields: [ms_id], references: [ms_id], onDelete: Cascade, onUpdate: NoAction)
+  enemy_team   enemy_team   @relation(fields: [team_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([team_id, ms_id])
+}
+
+model rank {
+  id     BigInt  @id @default(autoincrement())
+  r_name String  @db.VarChar
+  r_code String? @db.VarChar
+  user   user[]
+}
+
+enum battle_mode {
+  PVP
+  AI_RANDOM
+  AI_TEAM
+}
+
+enum battle_status {
+  active
+  waiting
+  finished
 }
