@@ -1,5 +1,8 @@
 import MSCoreClient from "./MSCoreClient";
 import prisma from "@/lib/prisma";
+import BtnGStageSettings from "./buttons/btn-gstage-settings";
+import ModalGStageSettings from "./modals/ModalGStageSettings";
+
 const PAGE_SIZE = 10;
 
 type MsCoreSearchParams = {
@@ -29,9 +32,13 @@ export default async function MSCore({searchParams}: {searchParams: MsCoreSearch
   const total = await prisma.mobile_suits.count({ where });
   return (
     <section className="full-bleed ms-core-section">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-start">
-            <MSCoreClient mobileSuits={mobileSuits} page={page} total={total} />
-        </div>
+      <div className="flex flex-row items-start justify-start gap-4 mb-4 p-4 bg-white rounded-sm shadow">
+        <BtnGStageSettings />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-start">
+        <MSCoreClient mobileSuits={mobileSuits} page={page} total={total} />
+      </div>
+      <ModalGStageSettings />
     </section>
   );
 }

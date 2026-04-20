@@ -623,6 +623,10 @@ img.rounded-lg {
   font-weight: 750;
 }
 
+.bg-white {
+  background-color: #ffffff;
+}
+
 .bg-basic-light-gray {
   background-color: #F3F4F6;
 }
@@ -1778,7 +1782,7 @@ main.leaderboard-container p {
   }
 }
 header {
-  z-index: 100;
+  z-index: 1;
   position: fixed;
   width: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(68, 77, 105, 0.5) 100%), url("/images/bg-header.jpg") lightgray 50%/100% 100% no-repeat;
