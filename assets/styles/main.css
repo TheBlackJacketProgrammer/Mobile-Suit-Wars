@@ -1762,28 +1762,13 @@ main.leaderboard-container p {
   }
 }
 
-@keyframes header-stretch-in {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
 #main-navbar {
-  transform-origin: left center;
-  animation: header-stretch-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform: none !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #main-navbar {
-    animation: none;
-    transform: none;
-  }
-}
 header {
-  z-index: 1;
   position: fixed;
+  z-index: 1000;
   width: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(68, 77, 105, 0.5) 100%), url("/images/bg-header.jpg") lightgray 50%/100% 100% no-repeat;
   transition: background 0.2s ease;
@@ -1967,23 +1952,23 @@ header .mobile-menu-toggle:hover .hamburger-icon {
     display: none !important;
   }
 }
-body.modal-open {
-  overflow: hidden !important;
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100% !important;
-  height: 100% !important;
+body.modal-open header {
+  z-index: 1 !important;
+}
+
+.modal-backdrop {
+  z-index: 99998;
 }
 
 div.modal {
   width: 100%;
   position: fixed;
   inset: 0px;
-  z-index: 999;
+  z-index: 99999;
   background-color: rgba(0, 0, 0, 0.9);
   padding-top: 3%;
+  max-width: 100% !important;
+  position: fixed;
 }
 @media (width <= 768px) {
   div.modal {
@@ -1992,7 +1977,6 @@ div.modal {
 }
 div.modal .modal-dialog-box {
   width: 100%;
-  max-width: 1280px;
   max-height: 90vh;
   border-radius: 8px;
   overflow: hidden;

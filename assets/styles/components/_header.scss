@@ -1,27 +1,10 @@
-@keyframes header-stretch-in {
-    from {
-        transform: scaleX(0);
-    }
-    to {
-        transform: scaleX(1);
-    }
-}
-
 #main-navbar {
-    transform-origin: left center;
-    animation: header-stretch-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    #main-navbar {
-        animation: none;
-        transform: none;
-    }
+   transform: none !important;
 }
 
 header {
-    z-index: 1;
     position: fixed;
+  z-index: 1000;
     width: 100%;
     background: linear-gradient(
         0deg,

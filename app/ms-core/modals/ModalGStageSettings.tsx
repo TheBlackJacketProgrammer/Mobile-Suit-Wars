@@ -7,7 +7,9 @@ export default function ModalGStageSettings() {
     document.getElementById("modalGStageSettings")?.classList.remove("justify-start");
     document.getElementById("modalGStageSettings")?.classList.remove("items-center");
     document.getElementById("modalGStageSettings")?.classList.remove("flex-col");
+    document.getElementById("modalGStageSettings")?.classList.remove("flex-col");
     document.getElementById("modalGStageSettings")?.classList.add("hidden");
+    document.querySelector("body")?.classList.remove("modal-open");
   }
   
   return (
