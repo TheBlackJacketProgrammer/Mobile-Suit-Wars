@@ -98,6 +98,7 @@ model battle_sessions {
 model enemy_team {
   id                     Int                      @id @default(autoincrement())
   name                   String
+  series                 String?
   battle_sessions        battle_sessions[]
   enemy_team_mobile_suit enemy_team_mobile_suit[]
 }
